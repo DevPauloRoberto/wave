@@ -1,8 +1,4 @@
-🌊 Wave Admin Dashboard
-
-Bem-vindo ao Wave Admin, um painel administrativo moderno e robusto desenvolvido com a última versão do Nuxt, focado em performance, segurança e uma experiência de desenvolvimento excepcional.
-
-Este projeto serve como um sistema de gerenciamento de conteúdo (CMS) completo, permitindo a administração de notícias, categorias e tags, com autenticação segura e interface responsiva.
+🌊 Wave
 
 🚀 Tecnologias Utilizadas
 
