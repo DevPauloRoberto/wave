@@ -11,7 +11,7 @@
                     label="Nova Tag" 
                     icon="pi pi-plus" 
                     class="w-full md:w-auto bg-blue-600 border-none hover:bg-blue-700 p-2 text-white" 
-                    @click="navigateTo('/admin/tags/create')" 
+                    @click="createTag()"  
                 />
             </div>
         </div>
@@ -55,7 +55,7 @@
                                         <Button 
                                             icon="pi pi-pencil" 
                                             severity="secondary"
-                                            class="bg-gray-600 hover:bg-gray-700 text-white px-8 py-6 rounded-lg"
+                                            class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-lg"
                                             text 
                                             rounded 
                                             v-tooltip.top="'Editar'"
@@ -63,7 +63,7 @@
                                         />
                                         <Button 
                                             icon="pi pi-trash"
-                                            class="bg-red-600 hover:bg-red-700 text-white px-8 py-6 rounded-lg"
+                                            class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg"
                                             text 
                                             rounded 
                                             v-tooltip.top="'Excluir'"
@@ -77,68 +77,71 @@
                 </div>
             </div>
         </div>
-
         <ConfirmDialog />
     </div>
 </template>
 
 <script setup lang="ts">
-import { useConfirm } from "primevue/useconfirm";
-import { useToast } from "primevue/usetoast";
-import type { ApiResponse } from "~/server/interface/PaginateResponse";
-import type { TagItem } from "~/server/interface/Tag";
+    import { useConfirm } from "primevue/useconfirm";
+    import { useToast } from "primevue/usetoast";
+    import type { ApiResponse } from "~/server/interface/PaginateResponse";
+    import type { TagItem } from "~/server/interface/Tag";
 
-const confirm = useConfirm();
-const toast = useToast();
-const page = ref(1);
-const rows = ref(10);
-const first = ref(0);
-const pageLinkSize = ref(5);
+    const confirm = useConfirm();
+    const toast = useToast();
+    const page = ref(1);
+    const rows = ref(10);
+    const first = ref(0);
+    const pageLinkSize = ref(5);
 
-const updatePageLinkSize = () => {
-    pageLinkSize.value = window.innerWidth < 768 ? 2 : 5;
-};
+    const updatePageLinkSize = () => {
+        pageLinkSize.value = window.innerWidth < 768 ? 1 : 5;
+    };
 
-const { data: tagsResponse, pending, refresh } = await useFetch<ApiResponse>('/api/admin/tags', {
-    query: {
-        page: page,
-        limit: rows
-    },
-    key: 'lista-tags-paginada',
-    watch: [page, rows]
-});
+    const { data: tagsResponse, pending, refresh } = await useFetch<ApiResponse>('/api/admin/tags', {
+        query: {
+            page: page,
+            limit: rows
+        },
+        key: 'lista-tags-paginada',
+        watch: [page, rows]
+    });
 
-const onPage = (event: any) => {
-    first.value = event.first;
-    rows.value = event.rows;
-    page.value = event.page + 1;
-};
+    const onPage = (event: any) => {
+        first.value = event.first;
+        rows.value = event.rows;
+        page.value = event.page + 1;
+    };
 
-const editTag = (id: number) => {
-    navigateTo(`/admin/tags/edit/${id}`);
+    const editTag = (id: number) => {
+        navigateTo(`/admin/tags/edit/${id}`);
 }
 
-const confirmDelete = (tag: TagItem) => {
-    confirm.require({
-        message: `Tem certeza que deseja excluir a tag "${tag.nome}"?`,
-        header: 'Confirmar Exclusão',
-        icon: 'pi pi-exclamation-triangle',
-        rejectLabel: 'Cancelar',
-        acceptLabel: 'Excluir',
-        acceptClass: 'p-button-danger',
-        accept: async () => {
-            try {
-                await $fetch(`/api/admin/tags/${tag.id}`, { method: 'DELETE' });
-                toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Tag excluída com sucesso.', life: 3000 });
-                refresh();
-            } catch (error) {
-                toast.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível excluir a tag.', life: 3000 });
-            }
-        }
-    });
-};
+    const createTag = () => {
+        navigateTo('/admin/tags/create');
+    }
 
-onUnmounted(() => {
-    window.removeEventListener('resize', updatePageLinkSize);
-});
+    const confirmDelete = (tag: TagItem) => {
+        confirm.require({
+            message: `Tem certeza que deseja excluir a tag "${tag.nome}"?`,
+            header: 'Confirmar Exclusão',
+            icon: 'pi pi-exclamation-triangle',
+            rejectLabel: 'Cancelar',
+            acceptLabel: 'Excluir',
+            acceptClass: 'p-button-danger',
+            accept: async () => {
+                try {
+                    await $fetch(`/api/admin/tags/${tag.id}`, { method: 'DELETE' });
+                    toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Tag excluída com sucesso.', life: 3000 });
+                    refresh();
+                } catch (error) {
+                    toast.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível excluir a tag.', life: 3000 });
+                }
+            }
+        });
+    };
+
+    onUnmounted(() => {
+        window.removeEventListener('resize', updatePageLinkSize);
+    });
 </script>
