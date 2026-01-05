@@ -2,8 +2,7 @@ import { Categoria } from '~/server/dbModels';
 
 export default defineEventHandler(async (event) => {
     const id = getRouterParam(event, 'id');
-    const body = await readBody(event);
-    const nome = body.nome;
+    const { nome } = await readBody(event);
 
     if (!id) {
         throw createError({ statusCode: 400, message: 'ID é obrigatório' });

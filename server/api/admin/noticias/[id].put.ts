@@ -2,13 +2,13 @@ import { Noticia } from '~/server/dbModels';
 
 export default defineEventHandler(async (event) => {
     const id = getRouterParam(event, 'id');
-    const { titulo, subtitulo, conteudo, autor, img, categoriaId, tags } = await readBody(event);
+    const { titulo, subtitulo, conteudo, autorId, img, categoriaId, tags } = await readBody(event);
 
     if (!id) {
         throw createError({ statusCode: 400, message: 'ID é obrigatório' });
     }
 
-    if (!titulo || !subtitulo || !conteudo || !autor || !img || !tags || !categoriaId) {
+    if (!titulo || !subtitulo || !conteudo || !autorId || !img || !tags || !categoriaId) {
         throw createError({ statusCode: 400, message: 'Todos os campos são Obrigatórios!' });
     }
 
@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
             titulo: titulo,
             subtitulo: subtitulo,
             conteudo: conteudo,
-            autor: autor,
+            autorId: autorId,
             img: img,
             categoriaId: categoriaId
         });

@@ -2,8 +2,7 @@ import { Tag } from '~/server/dbModels';
 
 export default defineEventHandler(async (event) => {
     const id = getRouterParam(event, 'id');
-    const body = await readBody(event);
-    const nome = body.nome;
+    const { nome, tipo } = await readBody(event);
 
     if (!id) {
         throw createError({ statusCode: 400, message: 'ID é obrigatório' });
@@ -16,11 +15,12 @@ export default defineEventHandler(async (event) => {
     const tag = await Tag.findByPk(id);
 
     if (!tag) {
-        throw createError({ statusCode: 404, message: 'Tag não encontrada' });
+        throw createError({ statusCode: 404, message: 'tag não encontrada' });
     }
 
     await tag.update({
-        nome: nome
+        nome: nome,
+        tipo: tipo
     });
 
     return tag;

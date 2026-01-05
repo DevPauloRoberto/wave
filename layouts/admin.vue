@@ -31,6 +31,13 @@
                         >
                             <Icon name="mdi:tag-outline" size="1.2em" /> Tags
                         </NuxtLink>
+                        <NuxtLink 
+                            to="/admin/autores" 
+                            class="hover:text-orange-600 transition-colors flex items-center gap-1"
+                            active-class="text-orange-600 font-bold"
+                        >
+                            <Icon name="mdi:account-multiple-outline" size="1.2em" /> Autores
+                        </NuxtLink>
                     </nav>
 
                     <div class="h-6 w-px bg-gray-200"></div>
@@ -69,6 +76,10 @@
                 
                 <NuxtLink to="/admin/tags" class="text-lg text-slate-600 hover:text-purple-600 flex items-center gap-3" @click="closeMenu">
                     <Icon name="mdi:tag-outline" size="1.5em" /> Tags
+                </NuxtLink>
+
+                <NuxtLink to="/admin/autores" class="text-lg text-slate-600 hover:text-orange-600 flex items-center gap-3" @click="closeMenu">
+                    <Icon name="mdi:account-multiple-outline" size="1.2em" /> Autores
                 </NuxtLink>
 
                 <button class="text-lg text-red-600 hover:text-red-800 flex items-center gap-3 mt-4 mx-2 md:mx-0" @click="logout">

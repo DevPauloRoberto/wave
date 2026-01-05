@@ -17,14 +17,22 @@ export const sequelize = new Sequelize(
     {
         host: process.env.DB_HOST,
         dialect: 'mysql',
-        // logging: (msg) => console.log(msg),
         logging: false,
+
+        // Configurações do Pool de Conexões Otimizadas
         pool: {
-            max: 10,
+            max: 5,        // Reduzi para 5 (mais leve para dev)
             min: 0,
-            acquire: 60000,
-            idle: 10000
+            acquire: 30000, // 30s é suficiente
+            idle: 500      // AGRESSIVO: Libera a conexão após 0.5s de inatividade. 
+            // Isso evita conexões "zumbis" travando o hot-reload.
         },
+
+        // Configurações diretas do driver mysql2
+        dialectOptions: {
+            connectTimeout: 10000, // Desiste rápido se o banco não responder
+        },
+
         retry: {
             match: [
                 /Deadlock/i,

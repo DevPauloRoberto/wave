@@ -1,5 +1,6 @@
 import { sequelize } from '../utils/sequelize';
 import { Admin } from './Admin';
+import { Autor } from './Autor';
 import { Categoria } from './Categoria';
 import { Noticia } from './Noticia';
 import { NoticiaTags } from './NoticiaTags';
@@ -10,6 +11,7 @@ const models = [
     Categoria,
     Tag,
     Noticia,
+    Autor,
     NoticiaTags,
 ];
 
@@ -29,5 +31,6 @@ export {
     Categoria,
     Noticia,
     NoticiaTags,
+    Autor,
     Tag
 };

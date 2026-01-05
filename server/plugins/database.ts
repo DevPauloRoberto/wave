@@ -14,6 +14,13 @@ async function connectWithRetries() {
         try {
             await sequelize.authenticate();
             initModels();
+
+            // --- CRIAÇÃO DE TABELAS (SYNC) ---
+            // 'alter: true' verifica o banco e cria/altera colunas se necessário
+            // ATENÇÃO: Depois que rodar e criar, COMENTE a linha abaixo
+            await sequelize.sync({ alter: true });
+            // ---------------------------------
+
             connected = true;
             console.log('🚀 [PLUGIN] Conexão com DB e Modelos inicializados com sucesso!');
         } catch (error) {
@@ -29,6 +36,6 @@ async function connectWithRetries() {
     }
 }
 
-export default defineNitroPlugin(async (nitroApp) => {
+export default defineNitroPlugin(async () => {
     await connectWithRetries();
 });

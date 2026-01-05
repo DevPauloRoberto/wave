@@ -2,8 +2,8 @@
     <div>
         <div class="grid grid-cols-12 gap-3 md:gap-4 my-4 md:mb-6 items-end">
             <div class="col-span-12 md:col-start-2 md:col-span-8 col-start-2">
-                <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Nova Tag</h1>
-                <p class="text-slate-500">Crie uma nova tag para organizar suas notícias.</p>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Novo Autor</h1>
+                <p class="text-slate-500">Crie um novo autor para suas notícias.</p>
             </div>
         </div>
 
@@ -14,38 +14,23 @@
                         class="flex flex-col gap-4 bg-gray-200 rounded-lg border border-blue-600 p-6 md:px-20 md:py-10"
                     >
                         <div class="flex flex-col gap-2">
-                            <label for="nome" class="font-bold text-gray-600">Nome da Tag</label>
+                            <label for="nome" class="font-bold text-grey-600">Nome do Autor</label>
                             <InputText 
                                 name="nome" 
                                 type="text" 
-                                placeholder="Ex: K-Pop" 
+                                placeholder="Ex: Amanda" 
                                 fluid 
-                                class="border border-blue-400  p-3 text-lg text-gray-500 font-bold"
+                                class="border border-gray-400 p-3 text-lg font-bold"
                             />
                             <Message v-if="$form.nome?.invalid" severity="error" size="small" variant="simple">
                                 {{ $form.nome.error?.message }}
                             </Message>
                         </div>
-                        <div class="flex flex-col gap-2">
-                            <label for="tipo" class="font-bold text-gray-600">Tipo da Tag</label>
-                            <Select 
-                                name="tipo" 
-                                :options="TipoConteudoOptions" 
-                                optionLabel="nome" 
-                                optionValue="id" 
-                                placeholder="Selecione o tipo da Tag" 
-                                fluid 
-                                class="border border-blue-400 text-gray-600"
-                                :pt="{ root: { class: 'p-1' } }"
-                            />
-                            <Message v-if="$form.autor?.invalid" severity="error" size="small" variant="simple">
-                                {{ $form.autor.error?.message }}
-                            </Message>
-                        </div>
+
                         <div class="flex flex-col md:flex-row justify-center gap-4 mt-4">
                             <Button 
                                 type="submit" 
-                                label="Salvar Tag" 
+                                label="Salvar Autor" 
                                 icon="pi pi-check" 
                                 class="bg-blue-600 border-none hover:bg-blue-700 p-3 text-white"
                                 :loading="loading" 
@@ -54,7 +39,7 @@
                                 label="Cancelar" 
                                 class="bg-red-400 border-none hover:bg-red-500 p-3 text-white"
                                 text 
-                                @click="navigateTo('/admin/tags')" 
+                                @click="navigateTo('/admin/autores')" 
                             />
                         </div>
                     </Form>
@@ -66,6 +51,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { useToast } from "primevue/usetoast";
 import { z } from 'zod';
@@ -73,14 +59,8 @@ import { z } from 'zod';
 const toast = useToast();
 const loading = ref(false);
 
-
 const zodSchema = z.object({
-    nome: z.string().min(1, {
-        message: 'O nome da tag é obrigatório.'
-    }),
-    tipo: z.union([z.number(), z.null()]).refine((val) => val !== null, {
-        message: 'Selecione o tipo de conteúdo.' 
-    }),
+    nome: z.string().min(1, { message: 'O nome da categoria é obrigatório.' })
 });
 
 const resolver = ref(zodResolver(zodSchema));
@@ -91,23 +71,22 @@ const onFormSubmit = async (event: any) => {
     if (valid) {
         loading.value = true;
         try {
-            await $fetch('/api/admin/tags/', {
+            await $fetch('/api/admin/autores/', {
                 method: 'POST',
                 body: {
-                    nome: values.nome,
-                    tipo: values.tipo
+                    nome: values.nome
                 }
             });
-            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Tag criada com sucesso!', life: 3000 });
+            toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Autor criado com sucesso!', life: 3000 });
             setTimeout(() => {
-                navigateTo('/admin/tags');
+                navigateTo('/admin/autores');
             }, 1000);
 
         } catch (error: any) {
             toast.add({ 
                 severity: 'error', 
                 summary: 'Erro', 
-                detail: error.data?.message || 'Erro ao criar tag.', 
+                detail: error.data?.message || 'Erro ao criar autor.', 
                 life: 3000 
             });
         } finally {

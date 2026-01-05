@@ -2,16 +2,16 @@
     <div>
         <div class="grid grid-cols-12 my-4 md:mb-6 items-end">
             <div class="col-span-12 md:col-start-2 md:col-span-8 col-start-2">
-                <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Gerenciar Tags</h1>
-                <p class="text-slate-500 text-sm md:text-base">Visualize e gerencie as tags do sistema.</p>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Gerenciar Autores</h1>
+                <p class="text-slate-500 text-sm md:text-base">Visualize e gerencie os autores do sistema.</p>
             </div>
             
             <div class="col-span-10 col-start-2 md:col-span-2 flex justify-center md:justify-end py-2">
                 <Button 
-                    label="Nova Tag" 
+                    label="Novo Autor" 
                     icon="pi pi-plus" 
                     class="w-full md:w-auto bg-blue-600 border-none hover:bg-blue-700 p-2 text-white" 
-                    @click="createTag()"  
+                    @click="createAutor()" 
                 />
             </div>
         </div>
@@ -20,21 +20,21 @@
                 <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="overflow-x-auto">
                         <DataTable 
-                            :value="tagsResponse?.data || []" 
+                            :value="autoresResponse?.data || []" 
                             lazy
                             paginator
                             :pageLinkSize="pageLinkSize"
                             :first="first"
                             :rows="rows"
-                            :totalRecords="tagsResponse?.total || 0"
+                            :totalRecords="autoresResponse?.total || 0"
                             :loading="pending"
                             @page="onPage"
                             :rowsPerPageOptions="[5, 10, 20]"
-                            class="p-datatable-sm flex justify-center flex-col"
+                            class="p-datatable-sm flex justify-center flex-col border-b border-gray-200"
                         >
                             <template #empty>
                                 <div class="text-center py-4 text-slate-500">
-                                    Nenhuma tag encontrada.
+                                    Nenhum autor encontrado.
                                 </div>
                             </template>
                             <Column 
@@ -45,31 +45,21 @@
                             
                             <Column field="nome" header="Nome" class="border-b border-gray-200">
                                 <template #body="slotProps">
-                                    <span class="font-bold text-slate-700 text-sm md:text-normal">{{ slotProps.data.nome }}</span>
-                                </template>
-                            </Column>
-
-                            <Column field="tipo" header="Tipo" class="border-b border-gray-200 text-sm md:text-normal">
-                                <template #body="slotProps">
-                                    <Tag 
-                                        class=""
-                                        :value="TipoConteudoLabel[slotProps.data.tipo]" 
-                                        :severity="getSeverity(slotProps.data.tipo)" 
-                                    />
+                                    <Tag :value="slotProps.data.nome" severity="info" />
                                 </template>
                             </Column>
 
                             <Column header="Ações" class="flex justify-center border-b border-gray-200">
                                 <template #body="slotProps">
-                                    <div class="flex gap-2 justify-center flex-col md:flex-row">
+                                    <div class="flex gap-2 justify-center">
                                         <Button 
                                             icon="pi pi-pencil" 
                                             severity="secondary"
-                                            class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 md:px-3 md:py-2 rounded-lg"
+                                            class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-lg"
                                             text 
                                             rounded 
                                             v-tooltip.top="'Editar'"
-                                            @click="editTag(slotProps.data.id)" 
+                                            @click="editAutor(slotProps.data.id)" 
                                         />
                                         <Button 
                                             icon="pi pi-trash"
@@ -87,6 +77,7 @@
                 </div>
             </div>
         </div>
+
         <ConfirmDialog />
     </div>
 </template>
@@ -95,9 +86,8 @@
     import { useConfirm } from "primevue/useconfirm";
     import { useToast } from "primevue/usetoast";
     import type { ApiResponse } from "~/server/interface/PaginateResponse";
-    import type { TagItem } from "~/server/interface/Tag";
-    // Importa os Enums para traduzir o número
-    import { TipoConteudoLabel, TipoConteudo } from '~/utils/enum';
+    import type { AutorItem } from "~/server/interface/Autor";
+
 
     const confirm = useConfirm();
     const toast = useToast();
@@ -110,19 +100,12 @@
         pageLinkSize.value = window.innerWidth < 768 ? 1 : 5;
     };
 
-    const getSeverity = (tipo: number) => {
-        switch (tipo) {
-            case TipoConteudo.KPOP: return 'info';
-            case TipoConteudo.KDRAMA: return 'danger';
-        }
-    };
-
-    const { data: tagsResponse, pending, refresh } = await useFetch<ApiResponse>('/api/admin/tags', {
+    const { data: autoresResponse, pending, refresh } = await useFetch<ApiResponse>('/api/admin/autores', {
         query: {
             page: page,
             limit: rows
         },
-        key: 'lista-tags-paginada',
+        key: 'lista-autores-paginada',
         watch: [page, rows]
     });
 
@@ -132,17 +115,17 @@
         page.value = event.page + 1;
     };
 
-    const editTag = (id: number) => {
-        navigateTo(`/admin/tags/edit/${id}`);
+    const editAutor = (id: number) => {
+        navigateTo(`/admin/autores/edit/${id}`);
     }
 
-    const createTag = () => {
-        navigateTo('/admin/tags/create');
+    const createAutor = () => {
+        navigateTo('/admin/autores/create');
     }
 
-    const confirmDelete = (tag: TagItem) => {
+    const confirmDelete = (autor: AutorItem) => {
         confirm.require({
-            message: `Tem certeza que deseja excluir a tag "${tag.nome}"?`,
+            message: `Tem certeza que deseja excluir o autor "${autor.nome}"?`,
             header: 'Confirmar Exclusão',
             icon: 'pi pi-exclamation-triangle',
             rejectLabel: 'Cancelar',
@@ -150,11 +133,11 @@
             acceptClass: 'p-button-danger',
             accept: async () => {
                 try {
-                    await $fetch(`/api/admin/tags/${tag.id}`, { method: 'DELETE' });
-                    toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Tag excluída com sucesso.', life: 3000 });
+                    await $fetch(`/api/admin/autores/${autor.id}`, { method: 'DELETE' });
+                    toast.add({ severity: 'success', summary: 'Sucesso', detail: 'autor excluído com sucesso.', life: 3000 });
                     refresh();
                 } catch (error) {
-                    toast.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível excluir a tag.', life: 3000 });
+                    toast.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível excluir o autor.', life: 3000 });
                 }
             }
         });

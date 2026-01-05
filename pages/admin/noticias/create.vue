@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="grid grid-cols-12 gap-3 md:gap-4 mb-4 md:mb-6 items-end">
+        <div class="grid grid-cols-12 my-4 gap-3 md:gap-4 mb-4 md:mb-6 items-end">
             <div class="col-span-12 md:col-start-2 md:col-span-8 col-start-2">
                 <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Nova Notícia</h1>
                 <p class="text-slate-500">Publique um novo conteúdo no portal.</p>
@@ -89,10 +89,10 @@
                         <div class="flex flex-col gap-2">
                             <label for="autor" class="font-bold text-blue-400">Autor</label>
                             <Select 
-                                name="autor" 
+                                name="autorId" 
                                 :options="autorOptions" 
                                 optionLabel="nome" 
-                                optionValue="value" 
+                                optionValue="id" 
                                 placeholder="Selecione o autor" 
                                 fluid 
                                 class="border border-blue-400 text-gray-600"
@@ -139,6 +139,7 @@ import { useToast } from "primevue/usetoast";
 import { z } from 'zod';
 import type { CategoriaItem } from '~/server/interface/Categoria';
 import type { TagItem } from '~/server/interface/Tag';
+import type { AutorItem } from '~/server/interface/Autor';
 
 interface ApiError {
     data?: {
@@ -159,34 +160,34 @@ const editorError = ref('');
 const img = ref('');
 const imgError = ref('');
 
-const [{ data: categoriasResponse }, { data: tagsResponse }] = await Promise.all([
+const [{ data: categoriasResponse }, { data: tagsResponse }, { data: autorResponse }] = await Promise.all([
     useFetch<CategoriaItem[]>('/api/admin/categorias/list-all', { 
         key: 'categorias-list-all' 
     }),
     useFetch<TagItem[]>('/api/admin/tags/list-all', { 
         key: 'tags-list-all'
+    }),
+    useFetch<AutorItem[]>('/api/admin/autores/list-all', { 
+        key: 'autores-list-all'
     })
 ]);
 
 const categorias = computed(() => categoriasResponse.value || []);
 const tagsOptions = computed(() => tagsResponse.value || []);
-
-const autorOptions = ref([
-    { nome: 'Amanda', value: 'Amanda' }
-]);
+const autorOptions = computed(() => autorResponse.value)
 
 const initialValues = ref({
     titulo: '',
     subtitulo: '',
-    autor: null, 
+    autorId: null, 
     categoriaId: null,
     tags: []
 });
 
 const zodSchema = z.object({
     titulo: z.string().min(3, 'O título deve ter pelo menos 3 caracteres.'),
-    autor: z.union([z.string(), z.null(), z.undefined()]).refine((val) => val && val.length > 0, {
-        message: 'Autor é obrigatório'
+    autorId: z.union([z.number(), z.null()]).refine((val) => val !== null, { 
+        message: 'Selecione um autor.' 
     }),
     categoriaId: z.union([z.number(), z.null()]).refine((val) => val !== null, { 
         message: 'Selecione uma categoria.' 

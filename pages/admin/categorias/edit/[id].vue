@@ -3,7 +3,7 @@
         <!-- Cabeçalho -->
         <div class="grid grid-cols-12 gap-4 mb-6">
             <div class="col-span-12 md:col-start-2 md:col-span-8">
-                <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Editar Categproa</h1>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Editar Categoria</h1>
                 <p class="text-slate-500 text-sm md:text-base">Edite as informações da categoria existente.</p>
             </div>
         </div>

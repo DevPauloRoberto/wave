@@ -7,7 +7,7 @@ import {
 } from 'sequelize';
 import { sequelize } from '../utils/sequelize';
 import { ICategoria } from '../interface/Categoria';
-import { Noticia } from './Noticia'; // Importado para associação
+import { Noticia } from './Noticia';
 
 export class Categoria extends Model<
     InferAttributes<Categoria>,
@@ -16,6 +16,7 @@ export class Categoria extends Model<
 
     declare id: CreationOptional<number>;
     declare nome: string;
+    // declare tipo: number;
 
     public static associate() {
         Categoria.hasMany(Noticia, {
@@ -36,6 +37,11 @@ Categoria.init(
             type: new DataTypes.STRING(255),
             allowNull: false,
         },
+        // tipo: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false,
+        //     comment: '1: K-Pop, 2: K-Drama'
+        // }
     },
     {
         sequelize,

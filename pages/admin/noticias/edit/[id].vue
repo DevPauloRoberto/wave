@@ -74,10 +74,10 @@
                         <div class="flex flex-col gap-2">
                             <label for="autor" class="font-bold text-blue-400">Autor</label>
                             <Select 
-                                name="autor" 
+                                name="autorId" 
                                 :options="autorOptions" 
                                 optionLabel="nome" 
-                                optionValue="value" 
+                                optionValue="id"
                                 placeholder="Selecione..." 
                                 fluid class="border border-blue-400 text-gray-600" :pt="{ root: { class: 'p-1' } }"
                             />
@@ -101,13 +101,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { useToast } from "primevue/usetoast";
 import { z } from 'zod';
 import type { CategoriaItem } from '~/server/interface/Categoria';
 import type { TagItem } from '~/server/interface/Tag';
 import type { NoticiaItem } from '~/server/interface/Noticia';
+import type { AutorItem } from '~/server/interface/Autor';
 
 interface FormSubmitEvent {
     valid: boolean;
@@ -128,9 +128,10 @@ const editorError = ref('');
 const img = ref('');
 const imgError = ref('');
 
-const [{ data: categoriasResponse }, { data: tagsResponse }, { data: noticiaData, error: fetchError, pending }] = await Promise.all([
+const [{ data: categoriasResponse }, { data: tagsResponse }, { data: autorResponse }, { data: noticiaData, error: fetchError, pending }] = await Promise.all([
     useFetch<CategoriaItem[]>('/api/admin/categorias/list-all', { key: 'cat-opts' }),
     useFetch<TagItem[]>('/api/admin/tags/list-all', { key: 'tag-opts' }),
+    useFetch<AutorItem[]>('/api/admin/autores/list-all', { key: 'autores-list-all'}),
     useFetch<NoticiaItem>(`/api/admin/noticias/${noticiaId}`, { key: `noticia-${noticiaId}` })
 ]);
 
@@ -141,14 +142,22 @@ if (fetchError.value) {
     }
 }
 
+if (!noticiaData) {
+    if (import.meta.client) {
+        toast.add({ severity: 'error', summary: 'Erro', detail: 'Notícia não encontrada', life: 3000 });
+        setTimeout(() => navigateTo('/admin/noticias'), 1000);
+    }
+}
+
+
 const categorias = computed(() => categoriasResponse.value || []);
 const tagsOptions = computed(() => tagsResponse.value || []);
-const autorOptions = ref([{ nome: 'Amanda', value: 'Amanda' }]);
+const autorOptions = computed(() => autorResponse.value)
 const initialValues = ref({
     titulo: '',
     subtitulo: '',
-    autor: null,
-    categoriaId: null,
+    autorId: 0,
+    categoriaId: 0,
     tags: [] as number[]
 });
 
@@ -159,15 +168,15 @@ if (noticiaData.value && noticiaData.value.tags) {
     initialValues.value = {
         titulo: noticiaData.value.titulo,
         subtitulo: noticiaData.value.subtitulo || '',
-        autor: noticiaData.value.autor as any,
-        categoriaId: noticiaData.value.categoriaId as any,
+        autorId: noticiaData.value.autorId,
+        categoriaId: noticiaData.value.categoriaId,
         tags: noticiaData.value.tags.map(t => t.id)
     };
 }
 
 const zodSchema = z.object({
     titulo: z.string().min(3, 'Mínimo 3 caracteres.'),
-    autor: z.union([z.string(), z.null(), z.undefined()]).refine((val) => val && val.length > 0, { message: 'Autor é obrigatório' }),
+    autorId: z.union([z.number(), z.null()]).refine((val) => val !== null, { message: 'Selecione um autor.' }),
     categoriaId: z.union([z.number(), z.null()]).refine((val) => val !== null, { message: 'Selecione uma categoria.' }),
     tags: z.array(z.number()).optional(),
     subtitulo: z.string().optional(),
@@ -175,7 +184,7 @@ const zodSchema = z.object({
 
 const resolver = ref(zodResolver(zodSchema));
 
-const onFormSubmit = async ({ valid, values, errors }: FormSubmitEvent) => {
+const onFormSubmit = async ({ valid, values }: FormSubmitEvent) => {
     let isContentValid = true;
     let isExtraValid = true;
     editorError.value = '';

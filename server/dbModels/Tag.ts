@@ -17,6 +17,7 @@ export class Tag extends Model<
 
     declare id: CreationOptional<number>;
     declare nome: string;
+    declare tipo: number;
 
     public static associate() {
         Tag.belongsToMany(Noticia, {
@@ -38,6 +39,11 @@ Tag.init(
             type: new DataTypes.STRING(255),
             allowNull: false,
         },
+        tipo: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            comment: '1: K-Pop, 2: K-Drama'
+        }
     },
     {
         sequelize,

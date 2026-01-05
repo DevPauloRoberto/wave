@@ -14,4 +14,5 @@ export default defineEventHandler(async (event) => {
     }
 
     return tag;
+    console.log(tag)
 });

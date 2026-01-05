@@ -1,4 +1,4 @@
-import { Noticia, Categoria } from '~/server/dbModels';
+import { Noticia, Categoria, Autor } from '~/server/dbModels';
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
@@ -8,11 +8,16 @@ export default defineEventHandler(async (event) => {
 
     try {
         const { count, rows } = await Noticia.findAndCountAll({
-            attributes: ['id', 'titulo', 'dataPublicacao', 'img', 'autor'],
+            attributes: ['id', 'titulo', 'dataPublicacao', 'img'],
             include: [
                 {
                     model: Categoria,
                     as: 'categoria',
+                    attributes: ['nome']
+                },
+                {
+                    model: Autor,
+                    as: 'autor',
                     attributes: ['nome']
                 }
             ],

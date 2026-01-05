@@ -72,7 +72,7 @@ const onFormSubmit = async (event: any) => {
     if (valid) {
         loading.value = true;
         try {
-            await $fetch('/api/admin/categorias/create', {
+            await $fetch('/api/admin/categorias/', {
                 method: 'POST',
                 body: {
                     nome: values.nome

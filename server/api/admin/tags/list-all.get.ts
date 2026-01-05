@@ -3,7 +3,7 @@ import { Tag } from '~/server/dbModels';
 export default defineEventHandler(async (event) => {
     try {
         const tags = await Tag.findAll({
-            attributes: ['id', 'nome'],
+            attributes: ['id', 'nome', 'tipo'],
             order: [['nome', 'ASC']]
         });
 

@@ -11,16 +11,17 @@ import { INoticia } from '../interface/Noticia';
 import { Categoria } from './Categoria';
 import { Tag } from './Tag';
 import { NoticiaTags } from './NoticiaTags';
+import { Autor } from './Autor'; // <--- Importante
 
 export class Noticia extends Model<
     InferAttributes<Noticia>,
     InferCreationAttributes<Noticia>
-> implements Omit<INoticia, 'dataPublicacao' | 'categoria' | 'tags'> {
+> implements Omit<INoticia, 'dataPublicacao' | 'categoria' | 'tags' | 'autorId'> {
 
     declare id: CreationOptional<number>;
     declare titulo: string;
     declare subtitulo: string;
-    declare autor: string;
+    declare autorId: ForeignKey<Autor['id']>;
     declare conteudo: string;
     declare img: string;
     declare dataPublicacao: CreationOptional<Date>;
@@ -31,6 +32,12 @@ export class Noticia extends Model<
         Noticia.belongsTo(Categoria, {
             foreignKey: 'categoriaId',
             as: 'categoria',
+        });
+
+        // <--- Nova Associação
+        Noticia.belongsTo(Autor, {
+            foreignKey: 'autorId',
+            as: 'autor',
         });
 
         Noticia.belongsToMany(Tag, {
@@ -56,9 +63,13 @@ Noticia.init(
             type: new DataTypes.STRING(500),
             allowNull: false,
         },
-        autor: {
-            type: new DataTypes.STRING(500),
+        autorId: {
+            type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: 'autores',
+                key: 'id',
+            },
         },
         conteudo: {
             type: DataTypes.TEXT,
@@ -84,7 +95,7 @@ Noticia.init(
     },
     {
         sequelize,
-        tableName: 'noticia',
+        tableName: 'noticias',
         timestamps: false,
     }
 );

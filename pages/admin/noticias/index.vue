@@ -67,7 +67,7 @@
 
                             <Column field="autor" header="Autor" class="hidden md:table-cell border-b border-gray-200">
                                 <template #body="slotProps">
-                                    <Tag :value="slotProps.data.autor" severity="info" />
+                                    <Tag :value="slotProps.data.autor.nome" severity="info" />
                                 </template>
                             </Column>
 
