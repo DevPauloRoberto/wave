@@ -18,7 +18,7 @@ async function connectWithRetries() {
             // --- CRIAÇÃO DE TABELAS (SYNC) ---
             // 'alter: true' verifica o banco e cria/altera colunas se necessário
             // ATENÇÃO: Depois que rodar e criar, COMENTE a linha abaixo
-            await sequelize.sync({ alter: true });
+            // await sequelize.sync({ alter: true });
             // ---------------------------------
 
             connected = true;
