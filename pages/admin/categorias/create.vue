@@ -27,6 +27,23 @@
                             </Message>
                         </div>
 
+                        <div class="flex flex-col gap-2">
+                            <label for="tipo" class="font-bold text-gray-600">Tipo da Tag</label>
+                            <Select 
+                                name="tipo" 
+                                :options="TipoConteudoOptions" 
+                                optionLabel="nome" 
+                                optionValue="id" 
+                                placeholder="Selecione o tipo da Tag" 
+                                fluid 
+                                class="border border-blue-400 text-gray-600"
+                                :pt="{ root: { class: 'p-1' } }"
+                            />
+                            <Message v-if="$form.autor?.invalid" severity="error" size="small" variant="simple">
+                                {{ $form.autor.error?.message }}
+                            </Message>
+                        </div>
+
                         <div class="flex flex-col md:flex-row justify-center gap-4 mt-4">
                             <Button 
                                 type="submit" 
@@ -61,7 +78,10 @@ const loading = ref(false);
 
 
 const zodSchema = z.object({
-    nome: z.string().min(1, { message: 'O nome da categoria é obrigatório.' })
+    nome: z.string().min(1, { message: 'O nome da categoria é obrigatório.' }),
+    tipo: z.union([z.number(), z.null()]).refine((val) => val !== null, {
+        message: 'Selecione o tipo de conteúdo.' 
+    }),
 });
 
 const resolver = ref(zodResolver(zodSchema));
@@ -75,7 +95,8 @@ const onFormSubmit = async (event: any) => {
             await $fetch('/api/admin/categorias/', {
                 method: 'POST',
                 body: {
-                    nome: values.nome
+                    nome: values.nome,
+                    tipo: values.tipo
                 }
             });
             toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Categoria criada com sucesso!', life: 3000 });

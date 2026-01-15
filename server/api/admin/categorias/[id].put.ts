@@ -2,7 +2,7 @@ import { Categoria } from '~/server/dbModels';
 
 export default defineEventHandler(async (event) => {
     const id = getRouterParam(event, 'id');
-    const { nome } = await readBody(event);
+    const { nome, tipo } = await readBody(event);
 
     if (!id) {
         throw createError({ statusCode: 400, message: 'ID é obrigatório' });
@@ -12,6 +12,10 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 400, message: 'Nome é obrigatório' });
     }
 
+    if (!tipo) {
+        throw createError({ statusCode: 400, message: 'Tipo é obrigatório' });
+    }
+
     const categoria = await Categoria.findByPk(id);
 
     if (!categoria) {
@@ -19,7 +23,8 @@ export default defineEventHandler(async (event) => {
     }
 
     await categoria.update({
-        nome: nome
+        nome: nome,
+        tipo: tipo
     });
 
     return categoria;

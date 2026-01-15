@@ -51,7 +51,7 @@
 
                             <Column header="Ações" class="flex justify-center border-b border-gray-200">
                                 <template #body="slotProps">
-                                    <div class="flex gap-2 justify-center">
+                                    <div class="flex gap-2 justify-center flex-col md:flex-row">
                                         <Button 
                                             icon="pi pi-pencil" 
                                             severity="secondary"

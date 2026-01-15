@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="grid grid-cols-12 my-4 gap-3 md:gap-4 mb-4 md:mb-6 items-end">
+        <div class="grid grid-cols-12 gap-3 md:gap-4 mb-4 md:mb-6 items-end">
             <div class="col-span-12 md:col-start-2 md:col-span-8 col-start-2">
                 <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Nova Notícia</h1>
                 <p class="text-slate-500">Publique um novo conteúdo no portal.</p>
@@ -29,6 +29,7 @@
                             </Message>
                         </div>
 
+                        <!-- Subtítulo -->
                         <div class="flex flex-col gap-2">
                             <label for="subtitulo" class="font-bold text-blue-400">Subtítulo (Opcional)</label>
                             <InputText 
@@ -40,16 +41,33 @@
                             />
                         </div>
 
+                        <!-- FILTRO DE TIPO (Filtra Categoria e Tags) -->
+                        <div class="flex flex-col gap-2">
+                            <label class="font-bold text-blue-400">Tipo de Conteúdo</label>
+                            <Select 
+                                v-model="filtroTipo"
+                                :options="TipoConteudoOptions"
+                                optionLabel="nome"
+                                optionValue="id"
+                                placeholder="Selecione o tipo (Filtra categorias e tags)"
+                                fluid
+                                class="border border-blue-400 text-gray-600"
+                                :pt="{ root: { class: 'p-1' } }"
+                            />
+                            <small class="text-gray-500">Selecione para filtrar as opções abaixo.</small>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Categoria -->
+                            <!-- Categoria (Filtrada) -->
                             <div class="flex flex-col gap-2">
                                 <label for="categoriaId" class="font-bold text-blue-400">Categoria</label>
                                 <Select 
                                     name="categoriaId" 
-                                    :options="categorias" 
+                                    :options="categoriasFiltradas" 
                                     optionLabel="nome" 
                                     optionValue="id" 
                                     placeholder="Selecione..." 
+                                    :disabled="!filtroTipo"
                                     fluid
                                     class="border border-blue-400 text-gray-600"
                                     :pt="{ root: { class: 'p-1' } }"
@@ -59,15 +77,16 @@
                                 </Message>
                             </div>
 
-                            <!-- Tags (MultiSelect) -->
+                            <!-- Tags (Filtradas) -->
                             <div class="flex flex-col gap-2">
                                 <label for="tags" class="font-bold text-blue-400">Tags</label>
                                 <MultiSelect 
                                     name="tags" 
-                                    :options="tagsOptions" 
+                                    :options="tagsFiltradas" 
                                     optionLabel="nome" 
                                     optionValue="id" 
                                     placeholder="Selecione as tags..." 
+                                    :disabled="!filtroTipo"
                                     fluid
                                     display="chip"
                                     class="border border-blue-400 text-gray-600"
@@ -76,18 +95,24 @@
                             </div>
                         </div>
 
+                        <!-- Imagem (Upload) -->
                         <div class="flex flex-col gap-2">
                             <label for="img" class="font-bold text-blue-400">Imagem</label>
                             <AdminUpload
+
                                 v-model="img" :errorMessage="$form.img?.error?.message"
+
                             />
                             <Message v-if="$form.img?.invalid" severity="error" size="small" variant="simple">
+
                                 {{ $form.img.error?.message }}
+
                             </Message>
                         </div>
 
+                        <!-- Autor -->
                         <div class="flex flex-col gap-2">
-                            <label for="autor" class="font-bold text-blue-400">Autor</label>
+                            <label for="autorId" class="font-bold text-blue-400">Autor</label>
                             <Select 
                                 name="autorId" 
                                 :options="autorOptions" 
@@ -98,11 +123,12 @@
                                 class="border border-blue-400 text-gray-600"
                                 :pt="{ root: { class: 'p-1' } }"
                             />
-                            <Message v-if="$form.autor?.invalid" severity="error" size="small" variant="simple">
-                                {{ $form.autor.error?.message }}
+                            <Message v-if="$form.autorId?.invalid" severity="error" size="small" variant="simple">
+                                {{ $form.autorId.error?.message }}
                             </Message>
                         </div>
 
+                        <!-- Conteúdo (TipTap) -->
                         <div class="flex flex-col gap-2">
                             <label class="font-bold text-blue-400">Conteúdo</label>
                             <AdminTiptap 
@@ -111,6 +137,7 @@
                             />
                         </div>
 
+                        <!-- Botões -->
                         <div class="flex flex-col md:flex-row justify-center gap-4 mt-6">
                             <Button 
                                 type="submit" 
@@ -133,18 +160,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { zodResolver } from '@primevue/forms/resolvers/zod';
 import { useToast } from "primevue/usetoast";
 import { z } from 'zod';
+import { TipoConteudoOptions } from '~/utils/enum'; // Importa as opções de tipo
 import type { CategoriaItem } from '~/server/interface/Categoria';
 import type { TagItem } from '~/server/interface/Tag';
 import type { AutorItem } from '~/server/interface/Autor';
 
 interface ApiError {
-    data?: {
-        message?: string;
-    };
+    data?: { message?: string; };
 }
 
 interface FormSubmitEvent {
@@ -160,21 +186,40 @@ const editorError = ref('');
 const img = ref('');
 const imgError = ref('');
 
+// Variável para controlar o filtro visual
+const filtroTipo = ref<number | null>(null);
+
+// Busca dados
 const [{ data: categoriasResponse }, { data: tagsResponse }, { data: autorResponse }] = await Promise.all([
-    useFetch<CategoriaItem[]>('/api/admin/categorias/list-all', { 
-        key: 'categorias-list-all' 
-    }),
-    useFetch<TagItem[]>('/api/admin/tags/list-all', { 
-        key: 'tags-list-all'
-    }),
-    useFetch<AutorItem[]>('/api/admin/autores/list-all', { 
-        key: 'autores-list-all'
-    })
+    useFetch<CategoriaItem[]>('/api/admin/categorias/list-all', { key: 'categorias-list-all' }),
+    useFetch<TagItem[]>('/api/admin/tags/list-all', { key: 'tags-list-all' }),
+    useFetch<AutorItem[]>('/api/admin/autores/list-all', { key: 'autores-list-all' })
 ]);
 
-const categorias = computed(() => categoriasResponse.value || []);
-const tagsOptions = computed(() => tagsResponse.value || []);
-const autorOptions = computed(() => autorResponse.value)
+const todasCategorias = computed(() => categoriasResponse.value || []);
+const todasTags = computed(() => tagsResponse.value || []);
+const autorOptions = computed(() => autorResponse.value || []);
+
+// COMPUTEDS PARA FILTRAGEM
+// Se filtroTipo tiver valor, retorna só os itens daquele tipo.
+const categoriasFiltradas = computed(() => {
+    if (!filtroTipo.value) return []; // Retorna vazio se não selecionou tipo (para forçar seleção)
+    return todasCategorias.value.filter(c => c.tipo === filtroTipo.value);
+});
+
+const tagsFiltradas = computed(() => {
+    if (!filtroTipo.value) return [];
+    return todasTags.value.filter(t => t.tipo === filtroTipo.value);
+});
+
+// Limpa seleções se mudar o tipo para evitar inconsistência
+watch(filtroTipo, () => {
+    // Reset manual dos campos dependentes seria ideal, 
+    // mas o PrimeVue Form controla o estado interno. 
+    // O usuário terá que selecionar novos valores válidos.
+    initialValues.value.categoriaId = null;
+    initialValues.value.tags = [];
+});
 
 const initialValues = ref({
     titulo: '',

@@ -17,7 +17,7 @@
                 name="file" 
                 url="/api/admin/upload" 
                 accept="image/*" 
-                :maxFileSize="2000000" 
+                :maxFileSize="20000000" 
                 :auto="true" 
                 chooseLabel="Escolher Imagem"
                 @upload="onUpload"

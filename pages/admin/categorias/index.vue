@@ -30,11 +30,11 @@
                             :loading="pending"
                             @page="onPage"
                             :rowsPerPageOptions="[5, 10, 20]"
-                            class="p-datatable-sm flex justify-center flex-col border-b border-gray-200"
+                            class="p-datatable-sm flex justify-center flex-col"
                         >
                             <template #empty>
                                 <div class="text-center py-4 text-slate-500">
-                                    Nenhuma categoria encontrada.
+                                    Nenhuma tag encontrada.
                                 </div>
                             </template>
                             <Column 
@@ -45,17 +45,27 @@
                             
                             <Column field="nome" header="Nome" class="border-b border-gray-200">
                                 <template #body="slotProps">
-                                    <Tag :value="slotProps.data.nome" severity="info" />
+                                    <span class="font-bold text-slate-700 text-sm md:text-normal">{{ slotProps.data.nome }}</span>
+                                </template>
+                            </Column>
+
+                            <Column field="tipo" header="Tipo" class="border-b border-gray-200 text-sm md:text-normal">
+                                <template #body="slotProps">
+                                    <Tag 
+                                        class=""
+                                        :value="TipoConteudoLabel[slotProps.data.tipo]" 
+                                        :severity="getSeverity(slotProps.data.tipo)" 
+                                    />
                                 </template>
                             </Column>
 
                             <Column header="Ações" class="flex justify-center border-b border-gray-200">
                                 <template #body="slotProps">
-                                    <div class="flex gap-2 justify-center">
+                                    <div class="flex gap-2 justify-center flex-col md:flex-row">
                                         <Button 
                                             icon="pi pi-pencil" 
                                             severity="secondary"
-                                            class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded-lg"
+                                            class="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 md:px-3 md:py-2 rounded-lg"
                                             text 
                                             rounded 
                                             v-tooltip.top="'Editar'"
@@ -114,6 +124,15 @@
         rows.value = event.rows;
         page.value = event.page + 1;
     };
+
+
+    const getSeverity = (tipo: number) => {
+        switch (tipo) {
+            case TipoConteudo.KPOP: return 'info';
+            case TipoConteudo.KDRAMA: return 'danger';
+        }
+    };
+
 
     const editCategoria = (id: number) => {
         navigateTo(`/admin/categorias/edit/${id}`);

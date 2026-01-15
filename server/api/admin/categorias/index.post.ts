@@ -1,14 +1,19 @@
 import { Categoria } from '~/server/dbModels';
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
-    const nome = body.nome
+    const { nome, tipo } = await readBody(event);
+
     if (!nome) {
         throw createError({ statusCode: 400, message: 'Nome da Categoria é obrigatório' });
     }
+    if (!tipo) {
+        throw createError({ statusCode: 400, message: 'Tipo da Categoria é obrigatório' });
+    }
+
     try {
         const novaCategoria = await Categoria.create({
-            nome: nome
+            nome: nome,
+            tipo: tipo
         });
         return novaCategoria;
     } catch (error: any) {
