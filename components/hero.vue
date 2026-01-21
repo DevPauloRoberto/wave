@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-[550px] sm:h-[630px] bg-[url('/img/hero.png')] bg-top bg-no-repeat bg-cover flex flex-col items-center justify-center" style="background-size: 100% 100%;">
+    <div class="w-full h-[550px] sm:h-[630px] bg-[url('/img/hero.png')] bg-center bg-no-repeat bg-cover flex flex-col items-center justify-center" style="background-size: 100% 100%;">
         <!-- Adicionei a classe 'animate-on-scroll' aqui também para animar o texto do hero -->
         <div class="flex flex-col items-center justify-center transition-all duration-700 opacity-0 translate-y-8 animate-on-scroll w-full h-full transition-transform duration-300 hover:scale-105">
             <h1 class="text-5xl md:text-7xl text-white md:max-w-5xl text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h1>

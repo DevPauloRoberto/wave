@@ -8,6 +8,17 @@ export interface NoticiaListaAdmin {
     categoria: CategoriaItem
 }
 
+export interface NoticiaLista {
+    id: number;
+    titulo: string;
+    subtitulo: string;
+    img: string;
+    autor: string;
+    categoria?: string;
+    tags?: TagItem;
+    tipo: number;
+}
+
 export interface NoticiaItem {
     id: number
     titulo: string

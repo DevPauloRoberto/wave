@@ -29,14 +29,14 @@ export default defineEventHandler(async (event) => {
         setCookie(event, 'auth_token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 60 * 60 * 8,
+            maxAge: 60 * 60 * 2,
             path: '/'
         })
 
         setCookie(event, 'is_logged_in', 'true', {
             httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 60 * 60 * 8,
+            maxAge: 60 * 60 * 2,
             path: '/'
         })
 

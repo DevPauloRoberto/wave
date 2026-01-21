@@ -1,9 +1,10 @@
 <template>
     <!-- Wrapper principal -->
-    <div class="col-span-12 lg:col-span-3">
+    <div class="col-span-12 lg:col-span-3 h-full">
         <!-- 
             1. BARRA SUPERIOR MOBILE (Visível apenas em telas menores que LG) 
-            Mostra o Logo e o Botão de Menu
+            - fixed top-0 left-0 w-full: Fixa no topo
+            - z-[60]: Garante que fique acima do Drawer (z-50) e do Backdrop (z-40)
         -->
         <div class="lg:hidden flex justify-between items-center p-4 bg-gray-300 shadow-md w-full fixed top-0 left-0 z-[60]">
             <img class="h-10 w-auto" src="/img/wave-logo.png" alt="Wave Logo">
@@ -12,22 +13,33 @@
             </button>
         </div>
 
+        <!-- ESPAÇADOR MOBILE: Empurra o conteúdo para baixo para não ficar atrás do header fixo -->
+        <div class="lg:hidden h-20"></div>
+
+        <!-- 2. BACKDROP (Fundo escuro quando o menu abre no mobile) -->
+        <div 
+            v-if="isMenuOpen" 
+            class="lg:hidden fixed inset-0 bg-black/50 z-40 transition-opacity"
+            @click="closeMenu"
+        ></div>
 
         <!-- 
             3. DRAWER / SIDEBAR
-            - Desktop: Static, sempre visível, ocupa a coluna do grid (lg:col-span-3).
+            - Mobile: Position Fixed, desliza da esquerda.
+            - Desktop: Static, sempre visível, preenche o wrapper.
+            - overscroll-contain: Impede que o scroll "vaze" para o body no celular
         -->
         <div 
-            class="bg-gray-300 flex flex-col items-center h-full overflow-y-auto transition-transform duration-300 ease-in-out z-50
-                   fixed top-0 left-0 w-full shadow-2xl 
+            class="bg-gray-300 flex flex-col items-center h-full overflow-y-auto overscroll-contain transition-transform duration-300 ease-in-out z-50
+                   fixed top-0 left-0 w-full md:w-4/5 shadow-2xl 
                    lg:shadow-none lg:static lg:translate-x-0 lg:w-full lg:flex"
             :class="isMenuOpen ? 'translate-x-0' : '-translate-x-full'"
         >
-            <!-- Logo (No Desktop aparece aqui, no mobile já tem na barra superior, mas podemos manter ou esconder) -->
+            <!-- Logo (No Desktop aparece aqui, no mobile já tem na barra superior) -->
             <img class="pt-8 mb-10 lg:mb-16 w-32 lg:w-auto hidden lg:block" src="/img/wave-logo.png" alt="Wave Logo">
             
             <!-- Conteúdo de Navegação -->
-            <nav class="text-left w-3/4 pb-10 mt-28 lg:mt-0">
+            <nav class="text-left w-3/4 pb-10 mt-16 lg:mt-0 pt-20 lg:pt-0">
                 
                 <!-- Link Home -->
                 <div>
@@ -140,8 +152,8 @@
                 </div>
 
                 <!-- Social Links -->
-                <div class="mt-10 flex flex-col gap-2">
-                    <NuxtLink to="https://www.instagra.com/paulean___" class="text-2xl font-medium hover:text-gray-600 transition-colors">Instagram</NuxtLink>
+                <div class="mt-10 flex flex-col gap-2 pb-10">
+                    <NuxtLink to="" class="text-2xl font-medium hover:text-gray-600 transition-colors">Instagram</NuxtLink>
                     <NuxtLink to="" class="text-2xl font-medium hover:text-gray-600 transition-colors">Twitter</NuxtLink>
                     <NuxtLink to="mailto:contato@wave.com" class="text-2xl font-medium hover:text-gray-600 transition-colors">E-mail</NuxtLink>
                 </div>
@@ -151,16 +163,17 @@
 </template>
 
 <script setup lang="ts">
+    import { ref, computed, watch, onUnmounted } from 'vue';
     import { zodResolver } from '@primevue/forms/resolvers/zod';
     import { useToast } from "primevue/usetoast";
     import { z } from 'zod';
-    import { TipoConteudo } from '~/utils/enum'; // Importante para os filtros funcionarem
+    import { TipoConteudo } from '~/utils/enum';
     import type { CategoriaItem } from '~/server/interface/Categoria';
     import type { TagItem } from '~/server/interface/Tag';
 
     const toast = useToast();
     const loading = ref(false);
-    const isMenuOpen = ref(false); // Estado do menu mobile
+    const isMenuOpen = ref(false); 
 
     const toggleMenu = () => {
         isMenuOpen.value = !isMenuOpen.value;
@@ -169,6 +182,40 @@
     const closeMenu = () => {
         isMenuOpen.value = false;
     }
+
+    watch(isMenuOpen, (isOpen) => {
+        if (import.meta.client) {
+            if (isOpen) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+    });
+
+
+    const [{ data: categoriasResponse }, { data: tagsResponse }] = await Promise.all([
+        useFetch<CategoriaItem[]>('/api/categorias', { key: 'cat-publicas' }),
+        useFetch<TagItem[]>('/api/tags', { key: 'tag-publicas' }),
+    ]);
+
+    const todasCategorias = computed(() => categoriasResponse.value || []);
+    const todasTags = computed(() => tagsResponse.value || []);
+
+    // Filtros
+    const catKpop = computed(() => todasCategorias.value.filter(t => t.tipo === TipoConteudo.KPOP));
+    const catKdrama = computed(() => todasCategorias.value.filter(t => t.tipo === TipoConteudo.KDRAMA));
+    const tagKpop = computed(() => todasTags.value.filter(t => t.tipo === TipoConteudo.KPOP));
+    const tagKdrama = computed(() => todasTags.value.filter(t => t.tipo === TipoConteudo.KDRAMA));
+
+
+    // Limpeza ao desmontar
+    onUnmounted(() => {
+        if (import.meta.client) {
+            document.body.style.overflow = '';
+        }
+    });
+
 
     const initialValues = ref({
         nome: '',
@@ -182,28 +229,12 @@
 
     const resolver = ref(zodResolver(zodSchema));
 
-    // Busca de dados
-    const [{ data: categoriasResponse }, { data: tagsResponse }] = await Promise.all([
-        useFetch<CategoriaItem[]>('/api/admin/categorias/list-all', { key: 'cat-publicas' }),
-        useFetch<TagItem[]>('/api/admin/tags/list-all', { key: 'tag-publicas' }),
-    ]);
-
-    const todasCategorias = computed(() => categoriasResponse.value || []);
-    const todasTags = computed(() => tagsResponse.value || []);
-
-    // Filtros
-    const catKpop = computed(() => todasCategorias.value.filter(t => t.tipo === TipoConteudo.KPOP));
-    const catKdrama = computed(() => todasCategorias.value.filter(t => t.tipo === TipoConteudo.KDRAMA));
-    const tagKpop = computed(() => todasTags.value.filter(t => t.tipo === TipoConteudo.KPOP));
-    const tagKdrama = computed(() => todasTags.value.filter(t => t.tipo === TipoConteudo.KDRAMA));
-
     const onFormSubmit = async (event: any) => {
         const { valid, values } = event;
 
         if (valid) {
             loading.value = true;
             
-            // Aqui você chamaria sua API de newsletter
             setTimeout(() => {
                 console.log('Dados enviados:', values);
                 toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Inscrição realizada!', life: 3000 });
