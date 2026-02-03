@@ -12,6 +12,7 @@
             <NuxtLink 
                 class="underline hover:text-gray-300 transition-colors" 
                 to=""
+                target="_blank"
             >
                 Twitter
             </NuxtLink>

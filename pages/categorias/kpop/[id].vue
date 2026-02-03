@@ -8,7 +8,7 @@
                 <!-- Hero Section -->
                 <Hero />
                 <!-- Ultimas Publicações -->
-                <UltimasPubli />
+                <CatPubli />
             </div>
         </div>
     </div>
