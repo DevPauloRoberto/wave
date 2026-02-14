@@ -8,19 +8,19 @@
                 class="col-span-12 md:col-span-6 lg:col-span-4 w-full flex justify-center opacity-0 translate-y-8 animate-on-scroll"
             >
                 <NuxtLink 
-                    :to="`/noticia/${noticia.id}`" 
+                    :to="`/publicação/${noticia.id}`" 
                     class="flex flex-col items-center justify-between h-full w-full max-w-xl px-4 border-black text-center transition-transform duration-300 hover:scale-105"
                 >
                     <div :class="noticia.tipo === 1 ? 'text-red-600' : 'text-blue-600'">
-                        <h2 class="text-3xl font-bold sm:mx-8 mt-5" v-html="noticia.titulo"></h2>
+                        <h2 class="text-4xl font-bold sm:mx-8 mt-5" v-html="noticia.titulo"></h2>
                         
                         <h3 
                             v-if="noticia.subtitulo" 
-                            class="text-xl font-medium mt-5 sm:mx-8 line-clamp-3"
+                            class="text-3xl mt-5 sm:mx-8 line-clamp-3 noto-serif"
                             v-html="noticia.subtitulo"
                         ></h3>
                         
-                        <p class="text-lg mt-5 font-medium">{{ noticia.autor }}</p>
+                        <p class="text-xl mt-5 font-semibold noto-serif">{{ noticia.autor }}</p>
                     </div>
 
                     <img 

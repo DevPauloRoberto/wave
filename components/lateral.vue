@@ -54,7 +54,7 @@
                     <ul>
                         <li v-for="cat in catKpop" :key="cat.id" class="ml-3">
                             <NuxtLink class="hover:underline hover:text-red-800" :to="`/categorias/kpop/${cat.id}`" @click="closeMenu">
-                                {{ cat.nome }}
+                                <span v-html="cat.nome"></span>
                             </NuxtLink>
                         </li>
                     </ul>
@@ -66,7 +66,7 @@
                     <ul>
                         <li v-for="cat in catKdrama" :key="cat.id" class="ml-3">
                             <NuxtLink class="hover:underline hover:text-blue-800" :to="`/categorias/kdrama/${cat.id}`" @click="closeMenu">
-                                {{ cat.nome }}
+                                <span v-html="cat.nome"></span>
                             </NuxtLink>
                         </li>
                     </ul>
@@ -87,7 +87,7 @@
                         <li v-for="tag in tagKpop" :key="tag.id" class="flex items-center gap-1">
                             <span class="w-1.5 h-1.5 bg-red-600 rounded-full"></span>
                             <NuxtLink class="hover:underline hover:text-red-800" :to="`/tags/kpop/${tag.id}`" @click="closeMenu">
-                                {{ tag.nome }}
+                                <span v-html="tag.nome"></span>
                             </NuxtLink>
                         </li>
                     </ul>
@@ -97,7 +97,7 @@
                         <li v-for="tag in tagKdrama" :key="tag.id" class="flex items-center gap-1">
                             <span class="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
                             <NuxtLink class="hover:underline hover:text-blue-800" :to="`/tags/kdrama/${tag.id}`" @click="closeMenu">
-                                {{ tag.nome }}
+                                <span v-html="tag.nome"></span>
                             </NuxtLink>
                         </li>
                     </ul>
@@ -118,9 +118,7 @@
                                 fluid
                                 class="border border-gray-400 p-2 text-lg font-bold rounded"
                             />
-                            <Message v-if="$form.nome?.invalid" severity="error" size="small" variant="simple">
-                                {{ $form.nome.error?.message }}
-                            </Message>
+                            <Message v-if="$form.nome?.invalid" severity="error" size="small" variant="simple" v-html="$form.nome.error?.message"></Message>
                         </div>
 
                         <div class="flex flex-col gap-2">
@@ -133,9 +131,7 @@
                                 fluid
                                 class="border border-gray-400 p-2 text-lg font-bold rounded"
                             />
-                            <Message v-if="$form.email?.invalid" severity="error" size="small" variant="simple">
-                                {{ $form.email.error?.message }}
-                            </Message>
+                            <Message v-if="$form.email?.invalid" severity="error" size="small" variant="simple" v-html="$form.email.error?.message"></Message>
                         </div>
 
                         <div class="flex justify-end mt-2">

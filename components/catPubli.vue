@@ -6,7 +6,7 @@
         :class="catTipo === 1 ? 'bg-red-600' : 'bg-blue-600'"
         class="h-1 bg-black flex-1 mx-4 rounded-full"></div>
 
-        <h2 class="text-center text-3xl font-medium uppercase">
+        <h2 class="text-center text-4xl font-medium zilla-slab italic">
             {{ catName }}
         </h2>
         
