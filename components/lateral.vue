@@ -43,7 +43,7 @@
                 
                 <!-- Link Home -->
                 <div>
-                    <NuxtLink to="/" class="underline text-4xl font-medium hover:text-gray-600 transition-colors" @click="closeMenu">
+                    <NuxtLink to="/" class="cinza-escuro underline text-4xl font-medium hover:text-gray-600 transition-colors" @click="closeMenu">
                         Últimas publicações
                     </NuxtLink>
                 </div>
@@ -77,14 +77,14 @@
                 </div>
 
                 <div class="mt-5">
-                    <NuxtLink to="/sobre" class="underline text-4xl font-medium hover:text-gray-600 transition-colors" @click="closeMenu">
+                    <NuxtLink to="/sobre" class="underline cinza-escuro text-4xl font-medium hover:text-gray-600 transition-colors" @click="closeMenu">
                         Sobre
                     </NuxtLink>
                 </div>
 
                 <!-- Tags -->
                 <div class="mt-10">
-                    <p class="text-3xl font-medium">Tags</p>
+                    <p class="cinza-escuro text-3xl font-medium">Tags</p>
                     
                     <!-- Tags K-Pop -->
                     <ul class="ml-1 flex flex-row flex-wrap texto-vermelho mt-3 font-medium">
@@ -153,7 +153,7 @@
                 </div> -->
 
                 <!-- Social Links -->
-                <div class="mt-10 flex flex-col gap-2 pb-10">
+                <div class="mt-10 flex flex-col gap-2 pb-10 cinza-escuro">
                     <NuxtLink to="" class="cursor-pointer text-3xl underline font-medium hover:text-gray-600 transition-colors">Instagram</NuxtLink>
                     <NuxtLink to="" class="cursor-pointer text-3xl underline font-medium hover:text-gray-600 transition-colors">Twitter</NuxtLink>
                     <NuxtLink to="mailto:contato@wave.com" class="cursor-pointer text-3xl underline font-medium hover:text-gray-600 transition-colors">E-mail</NuxtLink>

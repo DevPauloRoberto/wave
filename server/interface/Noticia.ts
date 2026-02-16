@@ -1,3 +1,4 @@
+import { AutorItem } from './Autor';
 import { CategoriaItem } from './Categoria';
 import { TagItem } from './Tag';
 
@@ -24,6 +25,20 @@ export interface NoticiaItem {
     titulo: string
     subtitulo: string
     autorId: number
+    conteudo: string
+    img: string
+    dataPublicacao: Date
+    categoriaId: number
+    categoria: CategoriaItem
+    tags: TagItem[]
+}
+
+export interface NoticiaPublicItem {
+    id: number
+    titulo: string
+    subtitulo: string
+    autorId: number
+    autor: AutorItem
     conteudo: string
     img: string
     dataPublicacao: Date

@@ -4,7 +4,7 @@
         <div class="col-span-12 lg:col-span-9 h-fit">
             <!-- HeaderDesktop -->
             <HeaderDesktop />
-            <div class="border-black border-t-4 w-full">
+            <div class="w-full">
                 <!-- Hero Section -->
                 <Hero />
                 <!-- Ultimas Publicações -->

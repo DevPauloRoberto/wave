@@ -4,7 +4,7 @@
     class="flex items-center justify-center mt-10 opacity-0 translate-y-8 animate-on-scroll">
         <div 
         :class="catTipo === 1 ? 'fundo-vermelho' : 'fundo-azul'"
-        class="h-1 bg-black flex-1 mx-4 rounded-full"></div>
+        class="h-1 flex-1 mx-4 rounded-full"></div>
 
         <h2 class="text-center text-4xl font-medium zilla-slab italic">
             {{ catName }}
@@ -12,7 +12,7 @@
         
         <div 
         :class="catTipo === 1 ? 'fundo-vermelho' : 'fundo-azul'"
-        class="h-1 bg-black flex-1 mx-4 rounded-full"></div>
+        class="h-1 flex-1 mx-4 rounded-full"></div>
     </div>
     
     <PostGrid 

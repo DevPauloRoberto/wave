@@ -12,7 +12,7 @@
                     class="flex flex-col items-center justify-between h-full w-full max-w-xl px-4 border-black text-center transition-transform duration-300 hover:scale-105"
                 >
                     <div :class="noticia.tipo === 1 ? 'texto-vermelho' : 'texto-azul'">
-                        <h2 class="text-4xl font-bold sm:mx-8 mt-5" v-html="noticia.titulo"></h2>
+                        <h2 class="text-4xl font-bold sm:mx-8 mt-5 rubik" v-html="noticia.titulo"></h2>
                         
                         <h3 
                             v-if="noticia.subtitulo" 
