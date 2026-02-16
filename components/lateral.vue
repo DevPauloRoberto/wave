@@ -1,12 +1,12 @@
 <template>
     <!-- Wrapper principal -->
-    <div class="col-span-12 lg:col-span-3 h-full">
+    <div class="col-span-12 lg:col-span-3 h-full zilla-slab">
         <!-- 
             1. BARRA SUPERIOR MOBILE (Visível apenas em telas menores que LG) 
             - fixed top-0 left-0 w-full: Fixa no topo
             - z-[60]: Garante que fique acima do Drawer (z-50) e do Backdrop (z-40)
         -->
-        <div class="lg:hidden flex justify-between items-center p-4 bg-gray-300 shadow-md w-full fixed top-0 left-0 z-[60]">
+        <div class="lg:hidden flex justify-between items-center p-4 cinza-menu shadow-md w-full fixed top-0 left-0 z-[60]">
             <img class="h-10 w-auto" src="/img/wave-logo.png" alt="Wave Logo">
             <button @click="toggleMenu" class="text-slate-800 p-2 focus:outline-none">
                 <Icon :name="isMenuOpen ? 'material-symbols:close' : 'material-symbols:menu'" size="2em" />
@@ -30,7 +30,7 @@
             - overscroll-contain: Impede que o scroll "vaze" para o body no celular
         -->
         <div 
-            class="bg-gray-300 flex flex-col items-center h-full overflow-y-auto overscroll-contain transition-transform duration-300 ease-in-out z-50
+            class="cinza-menu flex flex-col items-center h-full overflow-y-auto transition-transform duration-300 ease-in-out z-50
                    fixed top-0 left-0 w-full md:w-4/5 shadow-2xl 
                    lg:shadow-none lg:static lg:translate-x-0 lg:w-full lg:flex"
             :class="isMenuOpen ? 'translate-x-0' : '-translate-x-full'"
@@ -39,64 +39,68 @@
             <img class="pt-8 mb-10 lg:mb-16 w-32 lg:w-auto hidden lg:block" src="/img/wave-logo.png" alt="Wave Logo">
             
             <!-- Conteúdo de Navegação -->
-            <nav class="text-left w-3/4 pb-10 mt-16 lg:mt-0 pt-20 lg:pt-0">
+            <nav class="text-left mx-12 pb-10 mt-16 lg:mt-0 pt-20 lg:pt-0">
                 
                 <!-- Link Home -->
                 <div>
-                    <NuxtLink to="/" class="underline text-2xl font-medium hover:text-gray-600 transition-colors" @click="closeMenu">
+                    <NuxtLink to="/" class="underline text-4xl font-medium hover:text-gray-600 transition-colors" @click="closeMenu">
                         Últimas publicações
                     </NuxtLink>
                 </div>
 
                 <!-- Lista K-Pop -->
-                <div class="text-red-600 mt-5">
-                    <p class="text-2xl font-medium">K-Pop</p>
+                <div class="texto-vermelho mt-5">
+                    <p class="text-3xl font-medium underline">K-Pop</p>
                     <ul>
                         <li v-for="cat in catKpop" :key="cat.id" class="ml-3">
-                            <NuxtLink class="hover:underline hover:text-red-800" :to="`/categorias/kpop/${cat.id}`" @click="closeMenu">
-                                <span v-html="cat.nome"></span>
-                            </NuxtLink>
+                            <div class="py-1">
+                                <NuxtLink class="underline hover:text-red-800 text-2xl" :to="`/categorias/kpop/${cat.id}`" @click="closeMenu">
+                                    <span v-html="cat.nome"></span>
+                                </NuxtLink>
+                            </div>
                         </li>
                     </ul>
                 </div>
 
                 <!-- Lista K-Drama -->
-                <div class="text-blue-600 mt-5">
-                    <p class="text-2xl font-medium">K-Drama</p>
+                <div class="texto-azul mt-5">
+                    <p class="text-3xl font-medium underline">K-Drama</p>
                     <ul>
                         <li v-for="cat in catKdrama" :key="cat.id" class="ml-3">
-                            <NuxtLink class="hover:underline hover:text-blue-800" :to="`/categorias/kdrama/${cat.id}`" @click="closeMenu">
-                                <span v-html="cat.nome"></span>
-                            </NuxtLink>
+                            <div class="py-1">
+                                <NuxtLink class="underline hover:text-blue-800 text-2xl" :to="`/categorias/kdrama/${cat.id}`" @click="closeMenu">
+                                    <span v-html="cat.nome"></span>
+                                </NuxtLink>
+                            </div>
                         </li>
                     </ul>
                 </div>
 
                 <div class="mt-5">
-                    <NuxtLink to="/sobre" class="text-2xl font-medium hover:text-gray-600 transition-colors" @click="closeMenu">
+                    <NuxtLink to="/sobre" class="underline text-4xl font-medium hover:text-gray-600 transition-colors" @click="closeMenu">
                         Sobre
                     </NuxtLink>
                 </div>
 
                 <!-- Tags -->
                 <div class="mt-10">
-                    <p class="text-2xl font-medium">Tags</p>
+                    <p class="text-3xl font-medium">Tags</p>
                     
                     <!-- Tags K-Pop -->
-                    <ul class="ml-4 flex flex-row gap-x-4 gap-y-2 flex-wrap text-red-600 mt-3 font-medium">
-                        <li v-for="tag in tagKpop" :key="tag.id" class="flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 bg-red-600 rounded-full"></span>
-                            <NuxtLink class="hover:underline hover:text-red-800" :to="`/tags/kpop/${tag.id}`" @click="closeMenu">
+                    <ul class="ml-1 flex flex-row flex-wrap texto-vermelho mt-3 font-medium">
+                        <li v-for="tag in tagKpop" :key="tag.id" class="flex items-center text-xl">
+                            <span class="w-1.5 h-1.5 fundo-vermelho mx-3 rounded-full"></span>
+                            <NuxtLink class="underline hover:text-red-800 uppercase" :to="`/tags/kpop/${tag.id}`" @click="closeMenu">
                                 <span v-html="tag.nome"></span>
                             </NuxtLink>
                         </li>
                     </ul>
 
                     <!-- Tags K-Drama -->
-                    <ul class="ml-4 flex flex-row gap-x-4 gap-y-2 flex-wrap text-blue-600 mt-6 font-medium">
-                        <li v-for="tag in tagKdrama" :key="tag.id" class="flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                            <NuxtLink class="hover:underline hover:text-blue-800" :to="`/tags/kdrama/${tag.id}`" @click="closeMenu">
+                    <ul class="ml-1 flex flex-row flex-wrap texto-azul mt-6 font-medium">
+                        <li v-for="tag in tagKdrama" :key="tag.id" class="flex items-center text-xl">
+                            <span class="w-1.5 h-1.5 fundo-azul mx-3 rounded-full"></span>
+                            <NuxtLink class="underline hover:text-blue-800 uppercase" :to="`/tags/kdrama/${tag.id}`" @click="closeMenu">
                                 <span v-html="tag.nome"></span>
                             </NuxtLink>
                         </li>
@@ -104,8 +108,9 @@
                 </div>
 
                 <!-- Formulário Newsletter -->
-                <div class="mt-14 w-full">
-                    <p class="text-2xl font-medium mb-4">Receba nossas publicações</p>
+
+                <!-- <div class="mt-14 w-full">
+                    <p class="text-3xl font-medium mb-4">Receba nossas publicações</p>
                     <Form v-slot="$form" :resolver="resolver" :initialValues="initialValues" @submit="onFormSubmit" class="flex flex-col gap-4">
                         
                         <div class="flex flex-col gap-2">
@@ -145,13 +150,13 @@
                         </div>
                     </Form>
                     <Toast />
-                </div>
+                </div> -->
 
                 <!-- Social Links -->
                 <div class="mt-10 flex flex-col gap-2 pb-10">
-                    <NuxtLink to="" class="text-2xl font-medium hover:text-gray-600 transition-colors">Instagram</NuxtLink>
-                    <NuxtLink to="" class="text-2xl font-medium hover:text-gray-600 transition-colors">Twitter</NuxtLink>
-                    <NuxtLink to="mailto:contato@wave.com" class="text-2xl font-medium hover:text-gray-600 transition-colors">E-mail</NuxtLink>
+                    <NuxtLink to="" class="cursor-pointer text-3xl underline font-medium hover:text-gray-600 transition-colors">Instagram</NuxtLink>
+                    <NuxtLink to="" class="cursor-pointer text-3xl underline font-medium hover:text-gray-600 transition-colors">Twitter</NuxtLink>
+                    <NuxtLink to="mailto:contato@wave.com" class="cursor-pointer text-3xl underline font-medium hover:text-gray-600 transition-colors">E-mail</NuxtLink>
                 </div>
             </nav>
         </div>

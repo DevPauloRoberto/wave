@@ -40,6 +40,13 @@ import { zodResolver } from '@primevue/forms/resolvers/zod'
 import { useToast } from "primevue/usetoast"
 import { z } from 'zod'
 
+
+interface FormSubmitEvent {
+    valid: boolean;
+    values: Record<string, unknown>;
+    errors: unknown;
+}
+
 const toast = useToast()
 const router = useRouter()
 const loading = ref(false)
@@ -58,12 +65,6 @@ const zodSchema = z.object({
 type LoginFormSchema = z.infer<typeof zodSchema>
 
 const resolver = ref(zodResolver(zodSchema))
-
-interface FormSubmitEvent {
-    valid: boolean;
-    values: Record<string, unknown>;
-    errors: unknown;
-}
 
 const onFormSubmit = async ({ valid, values }: FormSubmitEvent) => {
     if (valid) {

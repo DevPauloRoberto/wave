@@ -1,9 +1,9 @@
 <template>
     <div 
-    :class="catTipo === 1 ? 'text-red-600' : 'text-blue-600'"
+    :class="catTipo === 1 ? 'texto-vermelho' : 'texto-azul'"
     class="flex items-center justify-center mt-10 opacity-0 translate-y-8 animate-on-scroll">
         <div 
-        :class="catTipo === 1 ? 'bg-red-600' : 'bg-blue-600'"
+        :class="catTipo === 1 ? 'fundo-vermelho' : 'fundo-azul'"
         class="h-1 bg-black flex-1 mx-4 rounded-full"></div>
 
         <h2 class="text-center text-4xl font-medium zilla-slab italic">
@@ -11,7 +11,7 @@
         </h2>
         
         <div 
-        :class="catTipo === 1 ? 'bg-red-600' : 'bg-blue-600'"
+        :class="catTipo === 1 ? 'fundo-vermelho' : 'fundo-azul'"
         class="h-1 bg-black flex-1 mx-4 rounded-full"></div>
     </div>
     

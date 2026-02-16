@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-black py-9 hidden lg:block">
-        <nav class="flex justify-end gap-8 pr-12 text-xl text-white opacity-0 translate-y-8 animate-on-scroll">
+    <div class="fundo-header py-9 hidden lg:block">
+        <nav class="flex justify-end gap-8 pr-12 text-xl text-white opacity-0 translate-y-8 animate-on-scroll zilla-slab">
             <NuxtLink 
                 class="underline hover:text-gray-300 transition-colors" 
                 to="https://www.instagram.com/paulean___" 

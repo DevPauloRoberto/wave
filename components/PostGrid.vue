@@ -8,10 +8,10 @@
                 class="col-span-12 md:col-span-6 lg:col-span-4 w-full flex justify-center opacity-0 translate-y-8 animate-on-scroll"
             >
                 <NuxtLink 
-                    :to="`/publicação/${noticia.id}`" 
+                    :to="`/publicacao/${noticia.id}`" 
                     class="flex flex-col items-center justify-between h-full w-full max-w-xl px-4 border-black text-center transition-transform duration-300 hover:scale-105"
                 >
-                    <div :class="noticia.tipo === 1 ? 'text-red-600' : 'text-blue-600'">
+                    <div :class="noticia.tipo === 1 ? 'texto-vermelho' : 'texto-azul'">
                         <h2 class="text-4xl font-bold sm:mx-8 mt-5" v-html="noticia.titulo"></h2>
                         
                         <h3 
