@@ -114,7 +114,6 @@ const { data: noticiaData, error: fetchError, pending } = await useFetch<Noticia
   { key: `noticia-${noticiaId}` }
 );
 
-
 onMounted(() => {
     initScrollObserver()
 })

@@ -1,54 +1,95 @@
 import { Admin } from '../../dbModels/index'
-import { defineEventHandler, readBody, createError, setCookie } from 'h3'
-import jwt from 'jsonwebtoken' // <--- Importamos o JWT
+import jwt from 'jsonwebtoken'
+import {
+    AUTH_COOKIE_NAME,
+    FLAG_COOKIE_NAME,
+    TOKEN_MAX_AGE_SECONDS,
+    HttpStatus,
+    isRateLimited,
+    resetRateLimit,
+} from '../../utils/auth'
 
 export default defineEventHandler(async (event) => {
+    // ── Rate Limiting (proteção contra Brute Force) ──────────────
+    const clientIp = getRequestIP(event, { xForwardedFor: true }) ?? 'unknown'
+
+    if (isRateLimited(clientIp)) {
+        throw createError({
+            statusCode: HttpStatus.TOO_MANY_REQUESTS,
+            message: 'Muitas tentativas de login. Tente novamente em 15 minutos.',
+        })
+    }
+
+    // ── Validação do body ────────────────────────────────────────
     const body = await readBody(event)
     const { usuario, senha } = body
 
     if (!usuario || !senha) {
-        throw createError({ statusCode: 400, message: 'Usuário e senha são obrigatórios.' })
+        throw createError({
+            statusCode: HttpStatus.BAD_REQUEST,
+            message: 'Usuário e senha são obrigatórios.',
+        })
     }
 
     try {
-        const admin = await Admin.findOne({ where: { usuario: usuario } })
+        const admin = await Admin.findOne({ where: { usuario } })
 
         if (!admin || !(await admin.checkPassword(senha))) {
-            throw createError({ statusCode: 401, message: 'Usuário ou senha incorretos.' })
+            throw createError({
+                statusCode: HttpStatus.UNAUTHORIZED,
+                message: 'Usuário ou senha incorretos.',
+            })
         }
 
-        const tokenPayload = {
-            id: admin.id,
-            usuario: admin.usuario
+        // ── Gerar JWT ────────────────────────────────────────────
+        const { jwtSecret, jwtExpiresIn } = useRuntimeConfig()
+
+        if (!jwtSecret) {
+            console.error('[SECURITY] JWT_SECRET não está definido. Abortando login.')
+            throw createError({
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: 'Erro de configuração do servidor.',
+            })
         }
 
-        const token = jwt.sign(tokenPayload, process.env.JWT_SECRET as string, {
-            expiresIn: '2h'
+        const tokenPayload = { id: admin.id, usuario: admin.usuario }
+
+        const token = jwt.sign(tokenPayload, jwtSecret, {
+            expiresIn: jwtExpiresIn,
         })
 
-        setCookie(event, 'auth_token', token, {
+        // ── Cookies seguros ──────────────────────────────────────
+        const isProduction = process.env.NODE_ENV === 'production'
+
+        setCookie(event, AUTH_COOKIE_NAME, token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 60 * 60 * 2,
-            path: '/'
+            secure: isProduction,
+            sameSite: 'lax',
+            maxAge: TOKEN_MAX_AGE_SECONDS,
+            path: '/',
         })
 
-        setCookie(event, 'is_logged_in', 'true', {
+        setCookie(event, FLAG_COOKIE_NAME, 'true', {
             httpOnly: false,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 60 * 60 * 2,
-            path: '/'
+            secure: isProduction,
+            sameSite: 'lax',
+            maxAge: TOKEN_MAX_AGE_SECONDS,
+            path: '/',
         })
+
+        resetRateLimit(clientIp)
 
         return {
             success: true,
             message: 'Login realizado com sucesso!',
-            user: { usuario: admin.usuario }
+            user: { usuario: admin.usuario },
         }
-
     } catch (error: any) {
         if (error.statusCode) throw error
-        console.error('Erro no login:', error)
-        throw createError({ statusCode: 500, message: 'Erro interno.' })
+        console.error('[LOGIN] Erro interno:', error)
+        throw createError({
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: 'Erro interno do servidor.',
+        })
     }
 })

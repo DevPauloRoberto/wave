@@ -25,11 +25,11 @@ export default defineEventHandler(async (event) => {
         });
 
         if (!noticia) {
-            throw createError({ statusCode: 404, message: 'Notícia não encontrada' });
+            throw createError({ statusCode: 404, message: 'Publicação não encontrada' });
         }
 
-        return noticia; // O Sequelize retorna o objeto com .tags como array
+        return noticia;
     } catch (error) {
-        throw createError({ statusCode: 500, message: 'Erro ao buscar notícia.' });
+        throw createError({ statusCode: 500, message: 'Erro ao buscar publicação.' });
     }
 });

@@ -2,7 +2,7 @@
   <div>
     <NuxtLayout>
     </NuxtLayout>
-      <NuxtPage />
+    <NuxtPage />
     <Toast />
   </div>
 </template>

@@ -1,43 +1,51 @@
-import jwt from 'jsonwebtoken';
+import jwt, { type JwtPayload } from 'jsonwebtoken'
+import { AUTH_COOKIE_NAME, HttpStatus } from '../utils/auth'
 
+/**
+ * Server middleware: protege todas as rotas /api/admin/*.
+ * Valida o JWT e injeta o payload decodificado em `event.context.auth`.
+ */
 export default defineEventHandler((event) => {
-    // 1. Pega o caminho da URL que está sendo acessada
-    const { pathname } = getRequestURL(event);
+    const { pathname } = getRequestURL(event)
 
-    // 2. Filtro: Só nos importamos se a rota começar com '/api/admin'
-    // Se for outra coisa (ex: login, home, imagens), deixa passar.
+    // Rotas públicas — não requerem autenticação
     if (!pathname.startsWith('/api/admin')) {
-        return;
+        return
     }
 
-    // 3. Tenta pegar o cookie seguro 'auth_token'
-    const token = getCookie(event, 'auth_token');
+    // ── Extrair token do cookie HttpOnly ─────────────────────────
+    const token = getCookie(event, AUTH_COOKIE_NAME)
 
-    // 4. Se não tiver token, bloqueia (401 Unauthorized)
     if (!token) {
         throw createError({
-            statusCode: 401,
-            statusMessage: 'Acesso negado: Login necessário.'
-        });
+            statusCode: HttpStatus.UNAUTHORIZED,
+            statusMessage: 'Acesso negado: Login necessário.',
+        })
     }
 
-    // 5. Verifica se o token é válido e não expirou
-    try {
-        const secret = process.env.JWT_SECRET;
+    // ── Validar JWT ──────────────────────────────────────────────
+    const { jwtSecret } = useRuntimeConfig()
 
-        if (!secret) {
-            // Fallback apenas para evitar erro fatal se esquecer o .env em dev
-            // Em produção isso deve estar configurado!
-            console.warn('[Security] JWT_SECRET não definido no .env');
-        }
-
-        // jwt.verify lança um erro se o token for falso ou expirado
-        jwt.verify(token, secret || 'SuaChaveSuperSecretaECompridaQueNinguemDescobre123');
-
-    } catch (error) {
+    if (!jwtSecret) {
+        console.error('[SECURITY] JWT_SECRET não definido. Bloqueando acesso.')
         throw createError({
-            statusCode: 401,
-            statusMessage: 'Sessão inválida ou expirada.'
-        });
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            statusMessage: 'Erro de configuração do servidor.',
+        })
     }
-});
+
+    try {
+        const decoded = jwt.verify(token, jwtSecret) as JwtPayload
+
+        // Injeta dados do admin no contexto para uso downstream
+        event.context.auth = {
+            id: decoded.id,
+            usuario: decoded.usuario,
+        }
+    } catch {
+        throw createError({
+            statusCode: HttpStatus.UNAUTHORIZED,
+            statusMessage: 'Sessão inválida ou expirada.',
+        })
+    }
+})
