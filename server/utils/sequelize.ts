@@ -1,5 +1,24 @@
 import { Sequelize } from 'sequelize'
-import 'dotenv/config'
+import dotenv from 'dotenv'
+import fs from 'node:fs'
+import path from 'node:path'
+
+// Resolve o .env na raiz do projeto independente do cwd
+function loadEnv() {
+    const candidates = [
+        path.resolve(process.cwd(), '.env'),
+        path.resolve(process.cwd(), '..', '.env'),
+        path.resolve(process.cwd(), '..', '..', '.env'),
+    ]
+    for (const envPath of candidates) {
+        if (fs.existsSync(envPath)) {
+            dotenv.config({ path: envPath })
+            return
+        }
+    }
+}
+
+loadEnv()
 
 const dbName = process.env.DB_NAME as string
 const dbUser = process.env.DB_USER as string

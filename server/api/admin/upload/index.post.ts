@@ -3,6 +3,22 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import sharp from 'sharp';
 
+/**
+ * Resolve a pasta "uploads/" de forma robusta para dev e preview/produção.
+ */
+function resolveUploadDir(): string {
+    const candidates = [
+        path.resolve(process.cwd(), 'uploads'),
+        path.resolve(process.cwd(), '..', 'uploads'),
+        path.resolve(process.cwd(), '..', '..', 'uploads'),
+    ];
+    for (const dir of candidates) {
+        if (fs.existsSync(dir)) return dir;
+    }
+    // Se nenhuma existe ainda, usa cwd/uploads (será criada abaixo)
+    return candidates[0];
+}
+
 export default defineEventHandler(async (event) => {
     // 1. Lê o arquivo enviado
     const files = await readMultipartFormData(event);
@@ -22,7 +38,7 @@ export default defineEventHandler(async (event) => {
     const fileName = `${randomUUID()}.webp`;
 
     // Caminho na RAIZ do projeto (fora de public)
-    const uploadDir = path.join(process.cwd(), 'uploads');
+    const uploadDir = resolveUploadDir();
     const filePath = path.join(uploadDir, fileName);
 
     // Garante que a pasta existe

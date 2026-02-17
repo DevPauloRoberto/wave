@@ -8,7 +8,7 @@
     "netdev": "nuxt dev --host",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "start": "",
+    "start": "node .output/server/index.mjs",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
