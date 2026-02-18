@@ -158,7 +158,7 @@ sequenceDiagram
 
 ```bash
 # 1. Clone o repositório
-git clone <url-do-repositorio> wave
+git clone https://github.com/DevPauloRoberto/wave
 cd wave
 
 # 2. Instale as dependências
