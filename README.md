@@ -1,4 +1,4 @@
-# 🌊 Wave — Portal de Notícias K-Pop & K-Drama
+# 🌊 Wave — Portal de K-Pop & K-Drama
 
 **Wave** é um CMS (Content Management System) fullstack para publicação e gerenciamento de notícias sobre cultura coreana (K-Pop e K-Drama). O sistema conta com um portal público para leitores e um painel administrativo protegido por autenticação JWT.
 

@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center justify-center mt-10 opacity-0 translate-y-8 animate-on-scroll">
-        <div class="h-1 bg-black flex-1 mx-4 rounded-full"></div>
-        <h2 class="text-center text-3xl font-medium">
+        <div class="h-1 bg-black flex-1 md:flex-none md:w-32 mx-4 rounded-full"></div>
+        <h2 class="text-center text-4xl font-medium zilla-slab italic">
             Ultimas publicações
         </h2>
         <div class="h-1 bg-black flex-1 mx-4 rounded-full"></div>
