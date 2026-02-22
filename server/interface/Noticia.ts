@@ -26,6 +26,8 @@ export interface NoticiaItem {
     subtitulo: string
     autorId: number
     conteudo: string
+    notas: string
+    referencias: string
     img: string
     dataPublicacao: Date
     categoriaId: number
@@ -40,6 +42,8 @@ export interface NoticiaPublicItem {
     autorId: number
     autor: AutorItem
     conteudo: string
+    notas: string
+    referencias: string
     img: string
     dataPublicacao: Date
     categoriaId: number
@@ -53,6 +57,8 @@ export interface INoticia {
     subtitulo: string
     autorId: number
     conteudo: string
+    notas: string
+    referencias: string
     img: string
     dataPublicacao: Date
     categoriaId: number

@@ -1,9 +1,9 @@
 import { Noticia, NoticiaTags } from '~/server/dbModels';
 
 export default defineEventHandler(async (event) => {
-    const { titulo, subtitulo, conteudo, autorId, img, categoriaId, tags } = await readBody(event);
+    const { titulo, subtitulo, conteudo, notas, referencias, autorId, img, categoriaId, tags } = await readBody(event);
 
-    if (!titulo || !subtitulo || !conteudo || !autorId || !img || !tags || !categoriaId) {
+    if (!titulo || !subtitulo || !conteudo || !notas || !referencias || !autorId || !img || !tags || !categoriaId) {
         throw createError({ statusCode: 400, message: 'Todos os campos são Obrigatórios!' });
     }
 
@@ -12,6 +12,8 @@ export default defineEventHandler(async (event) => {
             titulo: titulo,
             subtitulo: subtitulo,
             conteudo: conteudo,
+            notas: notas,
+            referencias: referencias,
             autorId: autorId,
             img: img,
             categoriaId: categoriaId

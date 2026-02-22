@@ -137,6 +137,24 @@
                             />
                         </div>
 
+                        <!-- Notas (TipTap) -->
+                        <div class="flex flex-col gap-2">
+                            <label class="font-bold text-blue-400">Notas</label>
+                            <AdminTiptap 
+                                v-model="notas" 
+                                :errorMessage="notasError" 
+                            />
+                        </div>
+
+                        <!-- Referências (TipTap) -->
+                        <div class="flex flex-col gap-2">
+                            <label class="font-bold text-blue-400">Referências</label>
+                            <AdminTiptap 
+                                v-model="referencias" 
+                                :errorMessage="referenciasError" 
+                            />
+                        </div>
+
                         <!-- Botões -->
                         <div class="flex flex-col md:flex-row justify-center gap-4 mt-6">
                             <Button 
@@ -183,6 +201,10 @@ const toast = useToast();
 const loading = ref(false);
 const conteudo = ref(''); 
 const editorError = ref('');
+const notas = ref('');
+const notasError = ref('');
+const referencias = ref('');
+const referenciasError = ref('');
 const img = ref('');
 const imgError = ref('');
 
@@ -249,6 +271,8 @@ const onFormSubmit = async ({ valid, values, errors }: FormSubmitEvent) => {
 
     let isExtraValid = true;
     editorError.value = '';
+    notasError.value = '';
+    referenciasError.value = '';
     imgError.value = '';
 
     if (!conteudo.value || conteudo.value === '<p></p>') {
@@ -256,6 +280,16 @@ const onFormSubmit = async ({ valid, values, errors }: FormSubmitEvent) => {
         isExtraValid = false;
     } else if (conteudo.value.replace(/<[^>]*>/g, '').length < 10) {
         editorError.value = 'O conteúdo é muito curto.';
+        isExtraValid = false;
+    }
+
+    if (!notas.value || notas.value === '<p></p>' || notas.value.replace(/<[^>]*>/g, '').trim().length === 0) {
+        notasError.value = 'As notas são obrigatórias.';
+        isExtraValid = false;
+    }
+
+    if (!referencias.value || referencias.value === '<p></p>' || referencias.value.replace(/<[^>]*>/g, '').trim().length === 0) {
+        referenciasError.value = 'As referências são obrigatórias.';
         isExtraValid = false;
     }
 
@@ -272,6 +306,8 @@ const onFormSubmit = async ({ valid, values, errors }: FormSubmitEvent) => {
         const payload = {
             ...formValues,
             conteudo: conteudo.value,
+            notas: notas.value,
+            referencias: referencias.value,
             img: img.value
         };
 

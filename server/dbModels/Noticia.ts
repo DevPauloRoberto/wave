@@ -23,6 +23,8 @@ export class Noticia extends Model<
     declare subtitulo: string;
     declare autorId: ForeignKey<Autor['id']>;
     declare conteudo: string;
+    declare notas: string;
+    declare referencias: string;
     declare img: string;
     declare dataPublicacao: CreationOptional<Date>;
     declare categoriaId: ForeignKey<Categoria['id']>;
@@ -72,6 +74,14 @@ Noticia.init(
             },
         },
         conteudo: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+        },
+        notas: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+        },
+        referencias: {
             type: DataTypes.TEXT,
             allowNull: false,
         },

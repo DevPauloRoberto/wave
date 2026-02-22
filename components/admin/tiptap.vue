@@ -64,6 +64,16 @@
 
                 <button 
                     type="button" 
+                    @click="editor?.chain().focus().toggleUnderline().run()" 
+                    :class="{ 'bg-blue-200 text-blue-800': editor?.isActive('underline') }" 
+                    class="p-1.5 rounded hover:bg-gray-200 transition-colors text-slate-700"
+                    title="Sublinhado"
+                >
+                    <Icon name="material-symbols:format-underlined" size="1.2em" />
+                </button>
+
+                <button 
+                    type="button" 
                     @click="editor?.chain().focus().toggleCode().run()" 
                     :class="{ 'bg-blue-200 text-blue-800': editor?.isActive('code') }" 
                     class="p-1.5 rounded hover:bg-gray-200 transition-colors text-slate-700"
@@ -248,6 +258,7 @@
 <script setup lang="ts">
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
+import Underline from '@tiptap/extension-underline';
 import { watch, onBeforeUnmount, ref } from 'vue';
 import { CustomParagraph, Footnote } from '~/server/utils/tiptap-extensions';
 
@@ -273,6 +284,8 @@ const paragraphClasses = [
     { label: 'Padrão', value: null },
     { label: 'Destaque vermelho (max-w-lg)', value: 'max-w-lg mx-auto texto-vermelho' },
     { label: 'Destaque azul (max-w-lg)', value: 'max-w-lg mx-auto texto-azul' },
+    { label: 'Destaque vermelho (largura total)', value: 'texto-vermelho' },
+    { label: 'Destaque azul (largura total)', value: 'texto-azul' },
     { label: 'Centralizado grande', value: 'text-2xl sm:text-3xl text-center' },
     { label: 'Citação', value: 'italic text-gray-600 border-l-4 border-gray-400 pl-4' },
 ];
@@ -284,7 +297,8 @@ const editor = useEditor({
             paragraph: false,
         }),
         CustomParagraph,
-        Footnote
+        Footnote,
+        Underline
     ],
     editorProps: {
         attributes: {
