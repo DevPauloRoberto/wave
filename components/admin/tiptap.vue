@@ -109,29 +109,65 @@
                 <!-- Divisor -->
                 <div class="w-px h-5 bg-gray-300 mx-1"></div>
 
-                <!-- Nota (Footnote) -->
+                <!-- Destaque de Texto (inline span) -->
                 <button 
                     type="button" 
-                    @click="openFootnoteDialog"
-                    :class="{ 'bg-blue-200 text-blue-800': editor?.isActive('footnote') }"
-                    class="p-1.5 rounded hover:bg-gray-200 transition-colors text-slate-700"
-                    title="Adicionar Nota (clique numa palavra primeiro)"
+                    @click="toggleHighlight('vermelho')"
+                    :class="{ 'bg-red-200 text-red-800': editor?.isActive('textHighlight', { color: 'vermelho' }) }"
+                    class="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                    title="Texto Vermelho"
                 >
-                    <Icon name="material-symbols:note-add" size="1.2em" />
+                    <Icon name="material-symbols:format-color-text" size="1.2em" class="text-red-600" />
                 </button>
 
                 <button 
-                    v-if="editor?.isActive('footnote')"
                     type="button" 
-                    @click="removeFootnote"
+                    @click="toggleHighlight('azul')"
+                    :class="{ 'bg-blue-200 text-blue-800': editor?.isActive('textHighlight', { color: 'azul' }) }"
+                    class="p-1.5 rounded hover:bg-gray-200 transition-colors"
+                    title="Texto Azul"
+                >
+                    <Icon name="material-symbols:format-color-text" size="1.2em" class="text-blue-600" />
+                </button>
+
+                <!-- Divisor -->
+                <div class="w-px h-5 bg-gray-300 mx-1"></div>
+
+                <!-- Notas -->
+                <button 
+                    type="button" 
+                    @click="openNoteDialog('nota')"
+                    :class="{ 'bg-blue-200 text-blue-800': editor?.isActive('footnote') }"
+                    class="p-1.5 rounded hover:bg-gray-200 transition-colors text-slate-700"
+                    title="Adicionar Nota (link para referência)"
+                >
+                    <Icon name="material-symbols:link" size="1.2em" />
+                </button>
+
+                <button 
+                    type="button" 
+                    @click="openNoteDialog('ref')"
+                    :class="{ 'bg-green-200 text-green-800': editor?.isActive('footnoteRef') }"
+                    class="p-1.5 rounded hover:bg-gray-200 transition-colors text-slate-700"
+                    title="Adicionar Referência (destino da nota)"
+                >
+                    <Icon name="material-symbols:bookmark" size="1.2em" />
+                </button>
+
+                <button 
+                    v-if="editor?.isActive('footnote') || editor?.isActive('footnoteRef')"
+                    type="button" 
+                    @click="removeNoteMark"
                     class="p-1.5 rounded hover:bg-red-200 transition-colors text-red-600"
-                    title="Remover Nota"
+                    title="Remover Nota/Referência"
                 >
                     <Icon name="material-symbols:close" size="1.2em" />
                 </button>
 
                 <!-- Divisor -->
                 <div class="w-px h-5 bg-gray-300 mx-1"></div>
+
+                <!-- Estilo de Parágrafo -->
                 <div class="relative">
                     <button 
                         type="button" 
@@ -209,41 +245,71 @@
         <small v-if="errorMessage" class="text-red-500 text-sm ml-1">{{ errorMessage }}</small>
     </div>
 
-    <!-- Modal: Adicionar Nota -->
+    <!-- Modal: Adicionar Nota / Referência -->
     <Teleport to="body">
         <Transition name="fade">
-            <div v-if="showFootnoteDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div v-if="showNoteDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                 <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full mx-4">
-                    <h3 class="text-lg font-bold mb-4 text-slate-800">Adicionar Nota</h3>
+                    <h3 class="text-lg font-bold mb-4 text-slate-800">
+                        {{ noteDialogType === 'nota' ? 'Adicionar Nota (Link)' : 'Adicionar Referência (Destino)' }}
+                    </h3>
                     
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-slate-700 mb-2">
-                            ID da Nota (ex: "nota1", "explicacao-termos")
+                            ID (use o mesmo ID na nota e na referência)
                         </label>
                         <input 
-                            v-model="footnoteId"
+                            v-model="noteDialogId"
                             type="text" 
                             placeholder="nota1"
-                            @keyup.enter="applyFootnote"
+                            @keyup.enter="applyNote"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             autofocus
                         />
                         <p class="text-xs text-gray-500 mt-2">
-                            Use este mesmo ID na sua nota de explicação (ex: &lt;p id="nota1"&gt;Explicação...&lt;/p&gt;)
+                            {{ noteDialogType === 'nota' 
+                                ? 'Esta palavra se tornará um link clicável que leva até a referência.' 
+                                : 'Esta palavra será o destino. Quando clicarem na nota, chegarão aqui.' }}
                         </p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Cor</label>
+                        <div class="flex gap-3">
+                            <button 
+                                type="button"
+                                @click="noteDialogColor = 'azul'"
+                                class="flex-1 px-4 py-2 rounded border-2 transition-colors font-medium"
+                                :class="noteDialogColor === 'azul' 
+                                    ? 'border-blue-600 bg-blue-50 text-blue-700' 
+                                    : 'border-gray-300 text-gray-600 hover:border-blue-300'"
+                            >
+                                Azul
+                            </button>
+                            <button 
+                                type="button"
+                                @click="noteDialogColor = 'vermelho'"
+                                class="flex-1 px-4 py-2 rounded border-2 transition-colors font-medium"
+                                :class="noteDialogColor === 'vermelho' 
+                                    ? 'border-red-600 bg-red-50 text-red-700' 
+                                    : 'border-gray-300 text-gray-600 hover:border-red-300'"
+                            >
+                                Vermelho
+                            </button>
+                        </div>
                     </div>
 
                     <div class="flex gap-3 justify-end">
                         <button 
                             type="button"
-                            @click="showFootnoteDialog = false"
+                            @click="showNoteDialog = false"
                             class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
                         >
                             Cancelar
                         </button>
                         <button 
                             type="button"
-                            @click="applyFootnote"
+                            @click="applyNote"
                             class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                         >
                             Adicionar
@@ -255,12 +321,33 @@
     </Teleport>
 </template>
 
+<script lang="ts">
+import '@tiptap/core'
+
+declare module '@tiptap/core' {
+    interface Commands<ReturnType> {
+        textHighlight: {
+            setTextHighlight: (color: 'vermelho' | 'azul') => ReturnType
+            unsetTextHighlight: () => ReturnType
+        }
+        footnote: {
+            setFootnote: (options: { noteId: string; color?: 'vermelho' | 'azul' }) => ReturnType
+            unsetFootnote: () => ReturnType
+        }
+        footnoteRef: {
+            setFootnoteRef: (options: { noteId: string; color?: 'vermelho' | 'azul' }) => ReturnType
+            unsetFootnoteRef: () => ReturnType
+        }
+    }
+}
+</script>
+
 <script setup lang="ts">
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import { watch, onBeforeUnmount, ref } from 'vue';
-import { CustomParagraph, Footnote } from '~/server/utils/tiptap-extensions';
+import { CustomParagraph, TextHighlight, Footnote, FootnoteRef } from '~/server/utils/tiptap-extensions';
 
 const props = defineProps({
     modelValue: {
@@ -277,15 +364,15 @@ const emit = defineEmits(['update:modelValue']);
 
 // UI state
 const showClassMenu = ref(false);
-const showFootnoteDialog = ref(false);
-const footnoteId = ref('');
+const showNoteDialog = ref(false);
+const noteDialogType = ref<'nota' | 'ref'>('nota');
+const noteDialogId = ref('');
+const noteDialogColor = ref<'azul' | 'vermelho'>('azul');
 
 const paragraphClasses = [
     { label: 'Padrão', value: null },
     { label: 'Destaque vermelho (max-w-lg)', value: 'max-w-lg mx-auto texto-vermelho' },
     { label: 'Destaque azul (max-w-lg)', value: 'max-w-lg mx-auto texto-azul' },
-    { label: 'Destaque vermelho (largura total)', value: 'texto-vermelho' },
-    { label: 'Destaque azul (largura total)', value: 'texto-azul' },
     { label: 'Centralizado grande', value: 'text-2xl sm:text-3xl text-center' },
     { label: 'Citação', value: 'italic text-gray-600 border-l-4 border-gray-400 pl-4' },
 ];
@@ -297,7 +384,9 @@ const editor = useEditor({
             paragraph: false,
         }),
         CustomParagraph,
+        TextHighlight,
         Footnote,
+        FootnoteRef,
         Underline
     ],
     editorProps: {
@@ -312,29 +401,56 @@ const editor = useEditor({
 
 const applyParagraphClass = (classValue: string | null) => {
     if (!editor.value) return;
+    const chain = editor.value.chain().focus() as any;
     if (classValue) {
-        editor.value.chain().focus().setParagraphClass(classValue).run();
+        chain.setParagraphClass(classValue).run();
     } else {
-        editor.value.chain().focus().removeParagraphClass().run();
+        chain.removeParagraphClass().run();
     }
     showClassMenu.value = false;
 };
 
-const openFootnoteDialog = () => {
-    footnoteId.value = '';
-    showFootnoteDialog.value = true;
-};
-
-const applyFootnote = () => {
-    if (!editor.value || !footnoteId.value.trim()) return;
-    editor.value.chain().focus().setFootnote(footnoteId.value.trim()).run();
-    showFootnoteDialog.value = false;
-    footnoteId.value = '';
-};
-
-const removeFootnote = () => {
+// --- Destaque de texto (inline span) ---
+const toggleHighlight = (color: 'vermelho' | 'azul') => {
     if (!editor.value) return;
-    editor.value.chain().focus().unsetFootnote().run();
+    if (editor.value.isActive('textHighlight', { color })) {
+        editor.value.chain().focus().unsetTextHighlight().run();
+    } else {
+        editor.value.chain().focus().setTextHighlight(color).run();
+    }
+};
+
+// --- Sistema de Notas ---
+const openNoteDialog = (type: 'nota' | 'ref') => {
+    noteDialogType.value = type;
+    noteDialogId.value = '';
+    noteDialogColor.value = 'azul';
+    showNoteDialog.value = true;
+};
+
+const applyNote = () => {
+    if (!editor.value || !noteDialogId.value.trim()) return;
+    const id = noteDialogId.value.trim();
+    const color = noteDialogColor.value;
+
+    if (noteDialogType.value === 'nota') {
+        editor.value.chain().focus().setFootnote({ noteId: id, color }).run();
+    } else {
+        editor.value.chain().focus().setFootnoteRef({ noteId: id, color }).run();
+    }
+
+    showNoteDialog.value = false;
+    noteDialogId.value = '';
+};
+
+const removeNoteMark = () => {
+    if (!editor.value) return;
+    if (editor.value.isActive('footnote')) {
+        editor.value.chain().focus().unsetFootnote().run();
+    }
+    if (editor.value.isActive('footnoteRef')) {
+        editor.value.chain().focus().unsetFootnoteRef().run();
+    }
 };
 
 watch(() => props.modelValue, (newValue) => {
@@ -398,6 +514,52 @@ onBeforeUnmount(() => {
     border: none;
     border-top: 2px solid #e2e8f0;
     margin: 2em 0;
+}
+
+/* Destaque de texto inline */
+.ProseMirror span.texto-vermelho {
+    color: #CC1236;
+}
+.ProseMirror span.texto-azul {
+    color: #00679A;
+}
+
+/* Notas (links clicáveis) */
+.ProseMirror a.nota-azul {
+    color: #00679A;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.ProseMirror a.nota-azul:hover {
+    color: #004d73;
+}
+.ProseMirror a.nota-vermelha {
+    color: #CC1236;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.ProseMirror a.nota-vermelha:hover {
+    color: #9a0e29;
+}
+
+/* Referências (destino das notas) */
+.ProseMirror span.ref-azul {
+    color: #00679A;
+    font-weight: 600;
+    background-color: rgba(0, 103, 154, 0.08);
+    padding: 0 0.15em;
+    border-radius: 2px;
+}
+.ProseMirror span.ref-vermelha {
+    color: #CC1236;
+    font-weight: 600;
+    background-color: rgba(204, 18, 54, 0.08);
+    padding: 0 0.15em;
+    border-radius: 2px;
 }
 
 /* Transição para o Modal */

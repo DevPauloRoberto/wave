@@ -51,3 +51,33 @@
 .fundo-vermelho{
     background-color: #CC1236;
 }
+
+// Notas (links clicáveis para referências)
+.nota-azul {
+    color: #00679A;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s;
+    &:hover { color: #004d73; }
+}
+
+.nota-vermelha {
+    color: #CC1236;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s;
+    &:hover { color: #9a0e29; }
+}
+
+// Referências (destino das notas)
+.ref-azul {
+    color: #00679A;
+    padding: 0 0.15em;
+    border-radius: 2px;
+}
+
+.ref-vermelha {
+    color: #CC1236;
+    padding: 0 0.15em;
+    border-radius: 2px;
+}
