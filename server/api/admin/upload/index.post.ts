@@ -23,6 +23,10 @@ export default defineEventHandler(async (event) => {
     // 1. Lê o arquivo enviado
     const files = await readMultipartFormData(event);
 
+    if (!event.context.auth) {
+        throw createError({ statusCode: 401, message: 'Não autorizado.' });
+    }
+
     if (!files || files.length === 0) {
         throw createError({ statusCode: 400, message: 'Nenhum arquivo enviado.' });
     }

@@ -8,6 +8,7 @@ import {
 import { sequelize } from '../utils/sequelize';
 import { IAdmin } from '../interface/Admin';
 import * as bcrypt from 'bcrypt';
+import { BCRYPT_SALT_ROUNDS } from '../utils/auth';
 
 export class Admin extends Model<
     InferAttributes<Admin>,
@@ -46,13 +47,11 @@ Admin.init(
         timestamps: false,
         hooks: {
             beforeCreate: async (admin: Admin) => {
-                const salt = await bcrypt.genSalt(10);
-                admin.senha = await bcrypt.hash(admin.senha, salt);
+                admin.senha = await bcrypt.hash(admin.senha, BCRYPT_SALT_ROUNDS);
             },
             beforeUpdate: async (admin: Admin) => {
                 if (admin.changed('senha')) {
-                    const salt = await bcrypt.genSalt(10);
-                    admin.senha = await bcrypt.hash(admin.senha, salt);
+                    admin.senha = await bcrypt.hash(admin.senha, BCRYPT_SALT_ROUNDS);
                 }
             },
         },

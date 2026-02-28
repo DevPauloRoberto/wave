@@ -29,6 +29,14 @@ export default defineNuxtConfig({
         }
     },
 
+    nitro: {
+        // mysql2, sequelize e sharp têm binários nativos — não podem ser
+        // bundlados pelo Rollup. Ficam como require() externos em runtime.
+        externals: {
+            external: ['mysql2', 'sequelize', 'sharp']
+        }
+    },
+
     primevue: {
         options: {
             ripple: true,

@@ -21,6 +21,7 @@ logs
 
 # ── Deploy / Docker (não subir no repo público) ──
 DEPLOY.md
+REVIEW.md
 Dockerfile
 docker-compose.yml
 .dockerignore

@@ -16,9 +16,13 @@ async function connectWithRetries() {
             initModels();
 
             // --- CRIAÇÃO DE TABELAS (SYNC) ---
-            // 'alter: true' verifica o banco e cria/altera colunas se necessário
-            // ATENÇÃO: Depois que rodar e criar, COMENTE a linha abaixo
-            // await sequelize.sync({ alter: true });
+            // Só sincroniza se DB_SYNC=true (definido no .env ou docker-compose)
+            // Use apenas na primeira vez ou quando alterar models.
+            const shouldSync = process.env.DB_SYNC === 'true';
+            if (shouldSync) {
+                await sequelize.sync({ alter: true });
+                console.log('⚠️  [PLUGIN] Tabelas sincronizadas (DB_SYNC=true). Desative após confirmar.');
+            }
             // ---------------------------------
 
             connected = true;
