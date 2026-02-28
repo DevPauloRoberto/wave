@@ -1,4 +1,4 @@
-# 🌊 Wave — Portal de K-Pop & K-Drama
+﻿# 🌊 Wave — Portal de K-Pop & K-Drama
 
 **Wave** é um CMS (Content Management System) fullstack para publicação e gerenciamento de notícias sobre cultura coreana (K-Pop e K-Drama). O sistema conta com um portal público para leitores e um painel administrativo protegido por autenticação JWT.
 
@@ -9,7 +9,8 @@
 - [Stack Tecnológica](#-stack-tecnológica)
 - [Arquitetura do Projeto](#-arquitetura-do-projeto)
 - [Fluxo de Autenticação](#-fluxo-de-autenticação)
-- [Instalação e Configuração](#-instalação-e-configuração)
+- [Docker (Recomendado)](#-docker-recomendado)
+- [Instalação Manual (Sem Docker)](#-instalação-e-configuração)
 - [Variáveis de Ambiente](#-variáveis-de-ambiente)
 - [Documentação da API](#-documentação-da-api)
 - [Scripts Disponíveis](#-scripts-disponíveis)
@@ -146,7 +147,101 @@ sequenceDiagram
 
 ---
 
+## 🐳 Docker (Recomendado)
+
+A forma mais rápida de subir o projeto inteiro (app + MySQL) com um único comando.
+As **imagens de upload** e o **banco de dados** ficam em volumes Docker separados — nunca são sobrescritos por rebuild.
+
+### Pré-requisitos
+
+- **Docker** ≥ 20.x
+- **Docker Compose** ≥ 2.x (já incluso no Docker Desktop)
+
+### Subindo do zero (primeira vez)
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/DevPauloRoberto/wave
+cd wave
+
+# 2. Crie o .env a partir do exemplo
+cp .env.example .env
+# Edite o .env com suas senhas (DB_PASS, JWT_SECRET, etc.)
+
+# 3. Habilite a criação de tabelas (só na primeira vez!)
+#    Abra server/plugins/database.ts e descomente:
+#      await sequelize.sync({ alter: true });
+
+# 4. Suba tudo (MySQL + App)
+docker compose up -d --build
+
+# 5. Acompanhe os logs até ver "Modelos e associações inicializados"
+docker compose logs -f app
+
+# 6. IMPORTANTE: Comente a linha do sync novamente e rebuild
+#    (evita alterações acidentais no banco em deploys futuros)
+docker compose up -d --build app
+```
+
+Pronto! Acesse `http://localhost:3000`.
+
+### Comandos do dia a dia
+
+```bash
+# ── Status ────────────────────────────────────────
+docker compose ps                          # Ver containers rodando
+docker compose logs -f                     # Logs de tudo em tempo real
+docker compose logs -f app                 # Logs só da app
+docker compose logs -f db                  # Logs só do MySQL
+
+# ── Parar / Iniciar ──────────────────────────────
+docker compose stop                        # Parar (mantém dados)
+docker compose start                       # Iniciar novamente
+docker compose down                        # Parar e remover containers
+
+# ── Rebuild (após alterar código) ─────────────────
+docker compose up -d --build app           # Rebuild só da app (uploads e banco intactos)
+docker compose up -d --build               # Rebuild de tudo
+
+# ── Banco de dados ────────────────────────────────
+docker compose exec db mysql -u wave_user -pwave_pass wave   # Acessar MySQL
+docker compose exec db mysqldump -u wave_user -pwave_pass wave > backup.sql  # Backup
+
+# ── Ver onde os volumes estão no disco ────────────
+docker volume inspect wave_uploads_data
+docker volume inspect wave_mysql_data
+
+# ── CUIDADO: Comandos destrutivos ─────────────────
+docker compose down -v                     # Apaga TUDO (banco + uploads)
+docker volume rm wave_mysql_data           # Apaga só o banco
+docker volume rm wave_uploads_data         # Apaga só os uploads
+```
+
+### Estrutura Docker
+
+| Serviço | Container    | Porta  | Descrição                         |
+| ------- | ------------ | ------ | ---------------------------------- |
+| `db`    | `wave-db`    | `3306` | MySQL 8.0 com healthcheck          |
+| `app`   | `wave-app`   | `3000` | Nuxt (Nitro) em produção           |
+
+| Volume (nomeado)   | Caminho no Container | Descrição                          |
+| ------------------ | -------------------- | ----------------------------------- |
+| `mysql_data`       | `/var/lib/mysql`     | Dados persistentes do MySQL         |
+| `uploads_data`     | `/app/uploads`       | Imagens enviadas pelo painel admin  |
+
+> **Os volumes são gerenciados pelo Docker, fora da pasta do projeto.**
+> Rebuild, clone novo, ou deletar o código **não apaga** seus dados.
+> Para ver onde estão fisicamente: `docker volume inspect wave_uploads_data`
+
+> **Nota:** O `DB_HOST` no Docker é `db` (nome do serviço no compose), não `localhost`.
+
+> 📖 **Vai fazer deploy numa VPS?** Veja o [DEPLOY.md](DEPLOY.md) — guia completo passo a passo para a Hostinger (KVM 1).
+
+---
+
 ## 🚀 Instalação e Configuração
+
+> Instalação **manual**, sem Docker. Use se preferir rodar Node e MySQL diretamente.
 
 ### Pré-requisitos
 

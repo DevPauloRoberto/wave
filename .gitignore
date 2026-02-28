@@ -14,4 +14,14 @@ logs
 .fleet
 .idea
 
+# ── Arquivos sensíveis ────────────────────────────
 .env
+.env.*
+!.env.example
+
+# ── Deploy / Docker (não subir no repo público) ──
+DEPLOY.md
+Dockerfile
+docker-compose.yml
+.dockerignore
+.github/

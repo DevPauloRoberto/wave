@@ -8,7 +8,7 @@
                 <!-- Hero Section -->
                 <Hero />
                 <div class="flex items-center justify-center mt-10 opacity-0 translate-y-8 animate-on-scroll">
-                    <div class="h-1 bg-black flex-1 mx-4 rounded-full"></div>
+                    <div class="h-1 bg-black flex-1 md:flex-none md:w-32 mx-4 rounded-full"></div>
                     <h1 class="text-center text-4xl font-medium zilla-slab italic">
                         Sobre
                     </h1>
@@ -24,7 +24,7 @@
                         </p>
                     </div>
                     <div class="flex items-center justify-center mt-10 opacity-0 translate-y-8 animate-on-scroll">
-                        <div class="h-1 bg-black flex-1 mx-4 rounded-full"></div>
+                        <div class="h-1 bg-black flex-1 md:flex-none md:w-32 mx-4 rounded-full"></div>
                         <h1 class="text-center text-4xl font-medium zilla-slab italic">
                             Equipe
                         </h1>
@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 <div class="flex items-center justify-center mt-10 opacity-0 translate-y-8 animate-on-scroll">
-                    <div class="h-1 bg-black flex-1 mx-4 rounded-full"></div>
+                    <div class="h-1 bg-black flex-1 md:flex-none md:w-32 mx-4 rounded-full"></div>
                     <h1 class="text-center text-4xl font-medium zilla-slab italic">
                         Colaborações
                     </h1>
