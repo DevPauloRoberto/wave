@@ -234,9 +234,6 @@ docker volume rm wave_uploads_data         # Apaga só os uploads
 > Para ver onde estão fisicamente: `docker volume inspect wave_uploads_data`
 
 > **Nota:** O `DB_HOST` no Docker é `db` (nome do serviço no compose), não `localhost`.
-
-> 📖 **Vai fazer deploy numa VPS?** Veja o [DEPLOY.md](DEPLOY.md) — guia completo passo a passo para a Hostinger (KVM 1).
-
 ---
 
 ## 🚀 Instalação e Configuração
@@ -461,12 +458,6 @@ Todas as rotas sob `/api/admin/*` requerem autenticação via cookie JWT.
 - **Tabelas Dinâmicas:** Paginação server-side e ações rápidas
 - **Upload Inteligente:** Conversão automática para WebP com resize via Sharp
 - **Path Traversal Protection:** Validação de caminhos no servidor de uploads
-
----
-
-## 📄 Licença
-
-Projeto privado — todos os direitos reservados.
 
 ---
 

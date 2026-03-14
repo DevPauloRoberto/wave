@@ -5,7 +5,8 @@
             <div 
                 v-for="noticia in posts" 
                 :key="noticia.id" 
-                class="col-span-12 md:col-span-6 lg:col-span-4 w-full flex justify-center opacity-0 translate-y-8 animate-on-scroll"
+                :class="colSpanClass"
+                class="w-full flex justify-center opacity-0 translate-y-8 animate-on-scroll"
             >
                 <NuxtLink 
                     :to="`/publicacao/${noticia.id}`" 
@@ -79,6 +80,13 @@
     });
 
     defineEmits(['loadMore']);
+
+    const colSpanClass = computed(() => {
+        const count = props.posts.length;
+        if (count === 1) return 'col-span-12';
+        if (count === 2) return 'col-span-12 md:col-span-6';
+        return 'col-span-12 md:col-span-6 lg:col-span-4';
+    });
 
     watch(() => props.posts, () => {
         nextTick(() => {
