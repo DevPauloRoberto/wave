@@ -15,15 +15,7 @@ export default defineNuxtConfig({
         '~/assets/css/main.scss'
     ],
 
-    // ── Segredos e configurações de runtime ──────────────────────
     runtimeConfig: {
-        jwtSecret: process.env.JWT_SECRET || '',
-        jwtExpiresIn: process.env.JWT_EXPIRES_IN || '2h',
-        dbName: process.env.DB_NAME || '',
-        dbUser: process.env.DB_USER || '',
-        dbPass: process.env.DB_PASS || '',
-        dbHost: process.env.DB_HOST || '',
-
         public: {
             appName: 'Wave',
         }
